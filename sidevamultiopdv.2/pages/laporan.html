@@ -1,0 +1,66 @@
+<!-- ═══════════════════════════════════════════════════════════
+     LAPORAN REALISASI ANGGARAN — SI-DEVA v3.0
+     Fitur: Pagu vs Nilai Kontrak · Efisiensi · Progress Tracker
+     Konten di-render oleh renderLaporan() di dashboard.js
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- ── INTRO HEADER ──────────────────────────────────────────── -->
+<div class="cfg-section-intro" style="margin-bottom:20px;">
+  <div class="cfg-section-intro-icon">📊</div>
+  <div class="cfg-section-intro-text">
+    <h3>Laporan Realisasi Anggaran</h3>
+    <p>
+      Perbandingan Pagu Anggaran vs Nilai Kontrak (Nego) per paket pengadaan.
+      Progress tracker menampilkan tahapan yang telah diselesaikan setiap paket.
+    </p>
+  </div>
+</div>
+
+<!-- ── FILTER LAPORAN ─────────────────────────────────────────── -->
+<div class="dashboard-filters" style="margin-bottom:20px;">
+  <div class="filter-card">
+    <label>🏢 Filter Bidang</label>
+    <select class="form-control" id="laporan-filter-bidang"
+      onchange="renderLaporan()">
+      <option value="">Semua Bidang</option>
+    </select>
+  </div>
+  <div class="filter-card">
+    <label>📊 Status Progres</label>
+    <select class="form-control" id="laporan-filter-progres"
+      onchange="renderLaporan()">
+      <option value="">Semua Progres</option>
+      <option value="done">Selesai (100%)</option>
+      <option value="on">Berjalan (1–99%)</option>
+      <option value="zero">Belum Dimulai (0%)</option>
+    </select>
+  </div>
+  <div class="filter-card">
+    <label>⚠️ Status Pagu</label>
+    <select class="form-control" id="laporan-filter-pagu"
+      onchange="renderLaporan()">
+      <option value="">Semua Status</option>
+      <option value="over">Melebihi Pagu 🚨</option>
+      <option value="warn">≥ 90% Pagu ⚠️</option>
+      <option value="ok">Di bawah 90% ✅</option>
+    </select>
+  </div>
+  <div class="filter-card" style="display:flex;align-items:flex-end;">
+    <button class="filter-reset-btn"
+      onclick="document.getElementById('laporan-filter-bidang').value='';
+               document.getElementById('laporan-filter-progres').value='';
+               document.getElementById('laporan-filter-pagu').value='';
+               renderLaporan();">
+      🔄 Reset Filter
+    </button>
+  </div>
+</div>
+
+<!-- ── KONTEN UTAMA (diisi oleh renderLaporan()) ─────────────── -->
+<div id="laporan-content">
+  <div class="empty-state">
+    <div class="empty-icon">📊</div>
+    <div class="empty-title">Memuat data...</div>
+    <div class="empty-sub">Laporan akan tampil setelah data paket tersedia</div>
+  </div>
+</div>

@@ -1,0 +1,517 @@
+<!-- ════════════════════════════════════════════════════════════
+     Manajemen User — SI-DEVA v3.2
+     Fitur baru v3.2: tombol Reset Password per user
+     ════════════════════════════════════════════════════════════ -->
+
+<!-- CSS tambahan khusus halaman ini -->
+<style>
+/* ── Reset Password Modal ─────────────────────────────────── */
+#modal-reset-pw {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.65);
+  align-items: center;
+  justify-content: center;
+}
+#modal-reset-pw.open { display: flex; }
+#modal-reset-pw .modal-box {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 28px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+#modal-reset-pw .modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#modal-reset-pw .modal-sub {
+  font-size: 12px;
+  color: var(--text3, #94a3b8);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+#modal-reset-pw .modal-email-box {
+  background: var(--surface2, #f8f9fc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #1e293b);
+  margin-bottom: 6px;
+  font-family: monospace;
+}
+#modal-reset-pw .pw-method-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 14px 0 8px;
+}
+#modal-reset-pw .pw-method-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+#modal-reset-pw .pw-tab {
+  flex: 1;
+  padding: 8px;
+  border: 2px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  background: var(--surface2, #f8f9fc);
+  color: var(--text2, #475569);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+#modal-reset-pw .pw-tab.active {
+  border-color: var(--primary, #1a56db);
+  background: rgba(26,86,219,0.08);
+  color: var(--primary, #1a56db);
+}
+#modal-reset-pw .pw-section { display: none; }
+#modal-reset-pw .pw-section.active { display: block; }
+#modal-reset-pw label {
+  display: block;
+  font-size: 12px;
+  color: var(--text3, #94a3b8);
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+#modal-reset-pw input[type=password],
+#modal-reset-pw input[type=text] {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 6px;
+  background: var(--surface2, #f8f9fc);
+  color: var(--text, #1e293b);
+  font-size: 13px;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 10px;
+}
+#modal-reset-pw input:focus {
+  outline: none;
+  border-color: var(--primary, #1a56db);
+  box-shadow: 0 0 0 3px rgba(26,86,219,0.12);
+}
+#modal-reset-pw .pw-strength-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border, #e2e8f0);
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+#modal-reset-pw .pw-strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.2s, background 0.2s;
+  width: 0;
+}
+#modal-reset-pw .pw-strength-text {
+  font-size: 11px;
+  color: var(--text3, #94a3b8);
+  margin-bottom: 12px;
+}
+#modal-reset-pw .pw-note {
+  font-size: 11px;
+  color: var(--text3, #94a3b8);
+  line-height: 1.5;
+  background: var(--surface2, #f8f9fc);
+  border-radius: 6px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--primary, #1a56db);
+  margin-bottom: 14px;
+}
+#modal-reset-pw .pw-err {
+  color: var(--red, #ef4444);
+  font-size: 12px;
+  margin-bottom: 10px;
+  display: none;
+}
+#modal-reset-pw .pw-ok {
+  color: var(--green, #16a34a);
+  font-size: 12px;
+  margin-bottom: 10px;
+  display: none;
+  background: rgba(22,163,74,0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+#modal-reset-pw .modal-footer {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ── Badge Tooltip (status user) ─────────────────────────── */
+.um-pending-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(139,92,246,.12);
+  color: #8b5cf6;
+  border: 1px solid rgba(139,92,246,.25);
+  margin-left: 4px;
+}
+</style>
+
+<!-- Placeholder — diisi oleh renderManajemenUser() (user-management.js) -->
+<div id="um-content">
+  <div style="text-align:center; padding:48px 24px; color:var(--text3);">
+    <div style="font-size:36px; margin-bottom:12px;">⏳</div>
+    <div style="font-size:15px; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif;">
+      Memuat data user…
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Reset Password ──────────────────────────────── -->
+<div id="modal-reset-pw">
+  <div class="modal-box">
+    <div class="modal-title">🔑 Reset Password User</div>
+    <div class="modal-sub">
+      Pilih metode reset untuk user:
+    </div>
+    <div class="modal-email-box" id="rp-target-email">—</div>
+    <input type="hidden" id="rp-target-userid">
+
+    <!-- Tab metode -->
+    <div class="pw-method-label">Metode Reset:</div>
+    <div class="pw-method-tabs">
+      <div class="pw-tab active" id="rp-tab-email" onclick="rpSwitchTab('email')">
+        📧 Kirim Link Reset
+      </div>
+      <div class="pw-tab" id="rp-tab-manual" onclick="rpSwitchTab('manual')">
+        🔒 Set Password Baru
+      </div>
+    </div>
+
+    <!-- Metode 1: Kirim email reset link -->
+    <div class="pw-section active" id="rp-section-email">
+      <div class="pw-note">
+        Sistem akan mengirim email berisi link reset password ke alamat user.
+        User perlu membuka email tersebut dan mengklik link untuk membuat password baru.
+        Link berlaku selama <strong>1 jam</strong>.
+      </div>
+    </div>
+
+    <!-- Metode 2: Set password langsung -->
+    <div class="pw-section" id="rp-section-manual">
+      <div class="pw-note">
+        Admin menetapkan password baru langsung. User dapat login dengan password ini
+        dan disarankan segera menggantinya setelah login.
+      </div>
+      <label>Password Baru *</label>
+      <input type="password" id="rp-new-pw"
+        placeholder="Minimal 8 karakter"
+        oninput="rpCheckStrength(this.value)"
+        autocomplete="new-password">
+      <div class="pw-strength-bar">
+        <div class="pw-strength-fill" id="rp-strength-fill"></div>
+      </div>
+      <div class="pw-strength-text" id="rp-strength-text">—</div>
+      <label>Konfirmasi Password *</label>
+      <input type="password" id="rp-confirm-pw"
+        placeholder="Ulangi password"
+        autocomplete="new-password">
+    </div>
+
+    <div class="pw-err" id="rp-err"></div>
+    <div class="pw-ok"  id="rp-ok"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" id="rp-submit-btn"
+        onclick="rpSubmit()">✅ Kirim Link Reset</button>
+      <button class="btn btn-secondary" onclick="closeResetPwModal()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  Reset Password — inline script untuk manajemen-user.html
+// ═══════════════════════════════════════════════════════════════
+
+(function () {
+
+  // ── Buka modal reset password ─────────────────────────────
+  window.openResetPwModal = function (userId, email) {
+    const el  = document.getElementById('modal-reset-pw');
+    const eid = document.getElementById('rp-target-email');
+    const uid = document.getElementById('rp-target-userid');
+    if (!el) return;
+    eid.textContent = email || userId;
+    uid.value = userId || '';
+    // Reset state
+    document.getElementById('rp-new-pw').value     = '';
+    document.getElementById('rp-confirm-pw').value  = '';
+    document.getElementById('rp-strength-fill').style.width      = '0';
+    document.getElementById('rp-strength-text').textContent       = '—';
+    document.getElementById('rp-err').style.display = 'none';
+    document.getElementById('rp-ok').style.display  = 'none';
+    rpSwitchTab('email'); // default tab kirim link
+    el.classList.add('open');
+  };
+
+  window.closeResetPwModal = function () {
+    document.getElementById('modal-reset-pw')?.classList.remove('open');
+  };
+
+  // Tutup saat klik overlay
+  document.getElementById('modal-reset-pw')?.addEventListener('click', function (e) {
+    if (e.target === this) closeResetPwModal();
+  });
+
+  // ── Switch tab ────────────────────────────────────────────
+  window.rpSwitchTab = function (tab) {
+    const isEmail = tab === 'email';
+    document.getElementById('rp-tab-email').classList.toggle('active', isEmail);
+    document.getElementById('rp-tab-manual').classList.toggle('active', !isEmail);
+    document.getElementById('rp-section-email').classList.toggle('active', isEmail);
+    document.getElementById('rp-section-manual').classList.toggle('active', !isEmail);
+    const btn = document.getElementById('rp-submit-btn');
+    if (btn) btn.textContent = isEmail ? '✅ Kirim Link Reset' : '🔒 Set Password Baru';
+    document.getElementById('rp-err').style.display = 'none';
+    document.getElementById('rp-ok').style.display  = 'none';
+  };
+
+  // ── Kekuatan password ─────────────────────────────────────
+  window.rpCheckStrength = function (pw) {
+    const fill = document.getElementById('rp-strength-fill');
+    const txt  = document.getElementById('rp-strength-text');
+    if (!fill || !txt) return;
+    let score = 0;
+    if (pw.length >= 8)  score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    const levels = [
+      { w: '0%',   color: '#e2e8f0', label: '—' },
+      { w: '25%',  color: '#ef4444', label: '⚠️ Lemah' },
+      { w: '50%',  color: '#f97316', label: '⚡ Sedang' },
+      { w: '75%',  color: '#eab308', label: '👍 Baik' },
+      { w: '90%',  color: '#22c55e', label: '💪 Kuat' },
+      { w: '100%', color: '#16a34a', label: '🔐 Sangat Kuat' },
+    ];
+    const lv = levels[Math.min(score, 5)];
+    fill.style.width      = lv.w;
+    fill.style.background = lv.color;
+    txt.textContent       = lv.label;
+    txt.style.color       = lv.color;
+  };
+
+  // ── Submit ────────────────────────────────────────────────
+  window.rpSubmit = async function () {
+    const userId = document.getElementById('rp-target-userid').value;
+    const email  = document.getElementById('rp-target-email').textContent;
+    const errEl  = document.getElementById('rp-err');
+    const okEl   = document.getElementById('rp-ok');
+    const btn    = document.getElementById('rp-submit-btn');
+
+    const isEmailTab = document.getElementById('rp-section-email').classList.contains('active');
+
+    errEl.style.display = 'none';
+    okEl.style.display  = 'none';
+
+    // ── Metode 1: Kirim email reset link (via Supabase Auth) ──
+    if (isEmailTab) {
+      if (!email || email === '—') {
+        errEl.textContent = 'Email user tidak ditemukan.';
+        errEl.style.display = 'block';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = '⏳ Mengirim…';
+      try {
+        await sbFetch('/auth/v1/recover', 'POST', { email });
+        okEl.textContent = `✅ Link reset password berhasil dikirim ke ${email}. Link berlaku 1 jam.`;
+        okEl.style.display = 'block';
+        if (typeof toast === 'function') toast(`Link reset dikirim ke ${email}`, 'success');
+        setTimeout(closeResetPwModal, 2500);
+      } catch (e) {
+        errEl.textContent = 'Gagal mengirim email: ' + (e.message || 'Coba lagi.');
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✅ Kirim Link Reset';
+      }
+      return;
+    }
+
+    // ── Metode 2: Set password langsung (via Supabase Admin) ──
+    const newPw  = document.getElementById('rp-new-pw').value;
+    const confPw = document.getElementById('rp-confirm-pw').value;
+
+    if (!newPw) {
+      errEl.textContent = 'Password baru wajib diisi.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (newPw.length < 8) {
+      errEl.textContent = 'Password minimal 8 karakter.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (newPw !== confPw) {
+      errEl.textContent = 'Konfirmasi password tidak cocok.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Menyimpan…';
+    try {
+      // Supabase Admin API: PUT /auth/v1/admin/users/{user_id}
+      // Membutuhkan service_role key — jika tidak tersedia, fallback ke kirim email
+      await sbFetch(`/auth/v1/admin/users/${userId}`, 'PUT', { password: newPw });
+      okEl.textContent = '✅ Password berhasil diubah. User dapat login dengan password baru.';
+      okEl.style.display = 'block';
+      if (typeof toast === 'function') toast('Password user berhasil diubah', 'success');
+      if (typeof logAudit === 'function') logAudit('reset_password', { user_id: userId });
+      setTimeout(closeResetPwModal, 2500);
+    } catch (e) {
+      // Admin API butuh service_role — jika gagal, tawarkan kirim email
+      if (e.message?.includes('403') || e.message?.includes('unauthorized') || e.message?.includes('Unauthorized')) {
+        errEl.innerHTML = `
+          ⚠️ Set password langsung memerlukan Service Role Key di Supabase.<br>
+          <a href="#" onclick="rpSwitchTab('email');return false;"
+            style="color:var(--primary);font-weight:600;">
+            Gunakan metode Kirim Link Reset →
+          </a>
+        `;
+      } else {
+        errEl.textContent = 'Gagal: ' + (e.message || 'Coba lagi.');
+      }
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔒 Set Password Baru';
+    }
+  };
+
+  // ── Patch renderManajemenUser: tambah tombol Reset Password ──
+  //    Kita wrap fungsi aslinya agar setelah render, kita inject
+  //    tombol reset di setiap baris tabel
+  function patchRenderManajemenUser() {
+    if (typeof window.renderManajemenUser !== 'function') return;
+    if (window._rpPatched) return;
+    window._rpPatched = true;
+
+    const _origRender = window.renderManajemenUser;
+    window.renderManajemenUser = async function () {
+      await _origRender.apply(this, arguments);
+      // Setelah render, inject tombol Reset di tiap baris
+      setTimeout(injectResetButtons, 150);
+    };
+  }
+
+  function injectResetButtons() {
+    const tbody = document.querySelector('#um-content table tbody');
+    if (!tbody) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    rows.forEach(row => {
+      // Cari tombol hapus 🗑️ untuk ambil userId dan email dari onclick
+      const deleteBtn = row.querySelector('button[onclick*="umDeleteUser"]');
+      if (!deleteBtn) return; // baris header atau baris "Anda sendiri"
+
+      // Ambil userId dan email dari onclick attribute tombol hapus
+      const onclickAttr = deleteBtn.getAttribute('onclick') || '';
+      const match = onclickAttr.match(/umDeleteUser\((\d+),\s*'([^']+)'\)/);
+      if (!match) return;
+
+      const id    = match[1];
+      const email = match[2];
+
+      // Cari user_id dari data _umUsers global
+      let userId = id;
+      if (window._umUsers) {
+        const found = window._umUsers.find(u => String(u.id) === String(id));
+        if (found) userId = found.user_id || id;
+      }
+
+      // Cek apakah tombol reset sudah ada
+      if (row.querySelector('.btn-reset-pw')) return;
+
+      // Tambahkan tombol Reset di sel aksi (td terakhir)
+      const lastTd = row.querySelector('td:last-child');
+      if (!lastTd) return;
+
+      const resetBtn = document.createElement('button');
+      resetBtn.className = 'btn btn-secondary btn-sm btn-icon btn-reset-pw';
+      resetBtn.title = 'Reset Password';
+      resetBtn.innerHTML = '🔑';
+      resetBtn.style.marginLeft = '4px';
+      resetBtn.onclick = function () {
+        openResetPwModal(userId, email);
+      };
+      lastTd.appendChild(resetBtn);
+    });
+  }
+
+  // ── Inisialisasi ─────────────────────────────────────────
+  function init() {
+    patchRenderManajemenUser();
+
+    // Panggil renderManajemenUser() saat halaman aktif
+    function tryRender() {
+      if (typeof renderManajemenUser === 'function') {
+        renderManajemenUser();
+      } else {
+        setTimeout(function () {
+          if (typeof renderManajemenUser === 'function') renderManajemenUser();
+        }, 400);
+      }
+    }
+
+    if (!window._muPageNavHooked) {
+      window._muPageNavHooked = true;
+      window.addEventListener('sideva:page-changed', (e) => {
+        if (e?.detail?.page === 'manajemen-user') setTimeout(tryRender, 80);
+      });
+    }
+
+    // Render jika halaman sudah aktif sekarang
+    setTimeout(function () {
+      const ap = document.querySelector('.page.active');
+      if (ap && ap.id === 'page-manajemen-user') tryRender();
+    }, 150);
+  }
+
+  // Jalankan saat sb-ready
+  window.addEventListener('sb-ready', function () {
+    init();
+    const ap = document.querySelector('.page.active');
+    if (ap && ap.id === 'page-manajemen-user') {
+      setTimeout(function () { if (typeof renderManajemenUser === 'function') renderManajemenUser(); }, 100);
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(init, 250);
+  });
+
+  setTimeout(init, 500);
+
+})();
+</script>

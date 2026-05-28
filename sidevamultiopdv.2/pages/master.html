@@ -1,0 +1,138 @@
+<!-- ═══════════════════════════════════════════════════════════
+     DATA MASTER — SI-DEVA v3.0
+     Tab: Bidang · OPD · Kode Rekening · PPK · Pejabat Pengadaan
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- ── TAB NAVIGATION ───────────────────────────────────────── -->
+<div class="tabs">
+  <button class="tab-btn active"  onclick="showTab('tab-bidang')">Bidang</button>
+  <button class="tab-btn"         onclick="showTab('tab-opd')">OPD</button>
+  <button class="tab-btn"         onclick="showTab('tab-rekening')">Kode Rekening</button>
+  <button class="tab-btn"         onclick="showTab('tab-ppk')">PPK</button>
+  <button class="tab-btn"         onclick="showTab('tab-pejabat-pengadaan')">Pejabat Pengadaan</button>
+</div>
+
+<!-- ── TAB: BIDANG ───────────────────────────────────────────── -->
+<div class="tab-pane active" id="tab-bidang">
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-header-title">Data Bidang</div>
+      <div class="master-action-bar">
+        <button class="btn btn-primary btn-sm" onclick="openMasterModal('bidang')">+ Tambah</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Bidang</th>
+            <th>Nama Jabatan</th>
+            <th>Kepala Bidang</th>
+            <th>NIP</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-bidang"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── TAB: OPD ──────────────────────────────────────────────── -->
+<div class="tab-pane" id="tab-opd">
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-header-title">Data OPD</div>
+      <div class="master-action-bar">
+        <button class="btn btn-primary btn-sm" onclick="openMasterModal('opd')">+ Tambah</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama OPD</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-opd"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── TAB: KODE REKENING ────────────────────────────────────── -->
+<div class="tab-pane" id="tab-rekening">
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-header-title">Kode Rekening Belanja</div>
+      <div class="master-action-bar">
+        <button class="btn btn-primary btn-sm" onclick="openMasterModal('rekening')">+ Tambah</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kode Rekening</th>
+            <th>Link E-Katalog</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-rekening"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── TAB: PPK ──────────────────────────────────────────────── -->
+<div class="tab-pane" id="tab-ppk">
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-header-title">Pejabat Pembuat Komitmen (PPK)</div>
+      <div class="master-action-bar">
+        <button class="btn btn-primary btn-sm" onclick="openMasterModal('ppk')">+ Tambah</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama PPK</th>
+            <th>NIP</th>
+            <th>Jabatan</th>
+            <th style="text-align:center;">Scan TTD</th>
+            <th style="text-align:center;">Cap/Stempel</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-ppk"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── TAB: PEJABAT PENGADAAN ────────────────────────────────── -->
+<div class="tab-pane" id="tab-pejabat-pengadaan">
+  <div class="table-container">
+    <div class="table-header">
+      <div class="table-header-title">Pejabat Pengadaan</div>
+      <div class="master-action-bar">
+        <button class="btn btn-primary btn-sm" onclick="openMasterModal('pejabatPengadaan')">+ Tambah</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nama Pejabat</th>
+            <th>NIP</th>
+            <th>Jabatan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-pejabatPengadaan"></tbody>
+      </table>
+    </div>
+  </div>
+</div>

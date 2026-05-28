@@ -1,0 +1,58 @@
+<!-- ═══════════════════════════════════════════════════════════
+     SURVEY HARGA E-KATALOG — SI-DEVA v3.0
+     ═══════════════════════════════════════════════════════════ -->
+
+<div class="table-container">
+
+  <!-- ── HEADER: Judul + Filter + Cari ──────────────────────── -->
+  <div class="table-header">
+    <div class="table-header-title">🏷️ Survey Harga E-Katalog</div>
+    <div class="search-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-harga"
+          placeholder="Cari produk, penyedia…"
+          oninput="filterHarga()">
+      </div>
+      <div class="search-wrap" style="min-width:170px;">
+        <span class="search-icon">🔎</span>
+        <input type="text" id="filter-rup-harga"
+          placeholder="Cari No RUP…"
+          oninput="filterHarga()"
+          style="padding-left:28px;">
+      </div>
+      <select class="filter-select" id="filter-rupdd-harga" onchange="filterHarga()" style="min-width:210px;">
+        <option value="">— Pilih RUP + Paket —</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── TABEL ───────────────────────────────────────────────── -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('harga','rup')">RUP</th>
+          <th onclick="sortTable('harga','namaItem')">Item Barang</th>
+          <th onclick="sortTable('harga','namaProduk')">Nama Produk</th>
+          <th onclick="sortTable('harga','namaPenyedia')">Penyedia</th>
+          <th onclick="sortTable('harga','qty')">Qty</th>
+          <th onclick="sortTable('harga','hargaTayang')">Harga Tayang</th>
+          <th onclick="sortTable('harga','totalHarga')">Total</th>
+          <th onclick="sortTable('harga','statusPajak')">Pajak</th>
+          <th onclick="sortTable('harga','statusKatalog')">Status</th>
+          <th onclick="sortTable('harga','negoFinal')">Nego Final</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-harga"></tbody>
+    </table>
+  </div>
+
+  <!-- ── FOOTER: Info + Paginasi ────────────────────────────── -->
+  <div class="table-footer">
+    <div class="table-info" id="info-harga"></div>
+    <div class="pagination" id="pag-harga"></div>
+  </div>
+
+</div>

@@ -1,0 +1,43 @@
+<!-- ═══════════════════════════════════════════════════════════
+     E-CATALOG — Referensi Link E-Catalog — SI-DEVA v3.0
+     ═══════════════════════════════════════════════════════════ -->
+
+<div class="table-container">
+
+  <!-- ── HEADER: Judul + Cari + Tambah ──────────────────────── -->
+  <div class="table-header">
+    <div class="table-header-title">🔗 Referensi Link E-Catalog</div>
+    <div class="search-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-ecatalog"
+          placeholder="Cari jenis belanja…"
+          oninput="filterEcatalog()">
+      </div>
+    </div>
+    <div style="margin-left:auto;">
+      <button class="btn btn-primary btn-sm" onclick="openEcatalogModal()">+ Tambah</button>
+    </div>
+  </div>
+
+  <!-- ── TABEL ───────────────────────────────────────────────── -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="no-col">No</th>
+          <th>Jenis Belanja</th>
+          <th>Link Referensi E-Catalog</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-ecatalog"></tbody>
+    </table>
+  </div>
+
+  <!-- ── FOOTER: Info jumlah data ───────────────────────────── -->
+  <div class="table-footer">
+    <div class="table-info" id="info-ecatalog"></div>
+  </div>
+
+</div>
