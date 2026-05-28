@@ -53,6 +53,8 @@ window.doCloudLogout = async function() {
                 key.startsWith('supabase')  ||
                 key === 'sideva_session_v3' ||
                 key === 'sideva_sb_session' ||
+                key === 'sideva_role'       || // ← TAMBAHKAN BARIS INI
+                key === 'sideva_current_opd_id' || // ← TAMBAHKAN BARIS INI
                 key.includes('auth')        ||
                 key.includes('token')       ||
                 key.includes('session')
