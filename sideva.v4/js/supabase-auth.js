@@ -3,24 +3,31 @@
 // ============================================================
 'use strict';
 
-// 1. Definisikan Global Object agar file lain bisa langsung mengakses SBAuth
+// 1. Definisikan Global Object
 window.SBAuth = {
-    isAdmin: () => false, // Default sebelum inisialisasi
+    isAdmin: () => false,
     getRole: () => 'viewer',
     isLoggedIn: () => false
 };
 
-// 2. Fungsi Logout Global
-// 2. Fungsi Logout Global — Fixed untuk REST API (tanpa window.supabase)
+// 2. Fungsi Logout Global — FIXED
 window.doCloudLogout = async function() {
-    
-    // Coba ambil token dari _session (variable dari IIFE auth)
+
+    // STEP 1: Panggil sbLogout() dari supabase-db.js
+    // Ini yang reset _session, _userRole, dan hapus sideva_session_v3
+    if (typeof sbLogout === 'function') {
+        try {
+            await sbLogout();
+        } catch(e) {
+            console.warn('sbLogout error:', e);
+        }
+    }
+
+    // STEP 2: Logout via REST API langsung (backup)
     const token = (typeof _session !== 'undefined' && _session?.access_token)
         ? _session.access_token
         : null;
 
-    // 1. Panggil Supabase logout REST endpoint langsung
-    // (tidak pakai window.supabase karena tidak tersedia)
     if (token && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
         try {
             await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, {
@@ -37,27 +44,30 @@ window.doCloudLogout = async function() {
         }
     }
 
-    // 2. Bersihkan semua localStorage
-    try { localStorage.clear(); } catch(e) {}
-
-    // 3. Bersihkan sessionStorage
-    try { sessionStorage.clear(); } catch(e) {}
-
-    // 4. Hapus semua cookie
+    // STEP 3: Bersihkan localStorage (pastikan sideva_session_v3 terhapus)
     try {
-        document.cookie.split(';').forEach(c => {
-            const name = c.trim().split('=')[0];
-            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
-        });
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (
+                key.startsWith('sb-')           ||
+                key.startsWith('supabase')       ||
+                key === 'sideva_session_v3'      ||
+                key === 'sideva_sb_session'      ||
+                key.includes('auth')             ||
+                key.includes('token')            ||
+                key.includes('session')
+            ) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
     } catch(e) {}
 
-    // 5. Reset state SBAuth ke default
-    window.SBAuth = {
-        isAdmin: () => false,
-        getRole: () => 'viewer',
-        isLoggedIn: () => false
-    };
+    // STEP 4: Bersihkan sessionStorage
+    try { sessionStorage.clear(); } catch(e) {}
 
-    // 6. Hard redirect — tidak bisa kembali
-    setTimeout(() => window.location.replace('index.html'), 150);
-};
+    // STEP 5: Hapus cookie
+    try {
+        document.cookie.split(';').forEach(c => {
+            const name
