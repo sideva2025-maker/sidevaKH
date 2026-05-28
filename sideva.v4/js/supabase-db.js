@@ -157,6 +157,37 @@ async function sbRegister(email, password) {
 
 async function sbLogout() {
   try { console.log('[SBDB] sbLogout invoked'); } catch(_) {}
+
+  // Sync gambar kop surat ke Supabase sebelum session dihapus
+  try {
+    const kopImg = localStorage.getItem('sideva_kop_surat_img');
+    if (kopImg && _session?.access_token) {
+      const cfgToSync = { ...(typeof appConfig !== 'undefined' ? appConfig : {}), _kopSuratImg: kopImg };
+      console.log('[SBDB] syncing kop surat image before logout');
+      await sbSaveConfig(cfgToSync);
+    }
+  } catch(_) {}
+
+  // Panggil endpoint logout Supabase (tanpa credentials:include agar tidak CORS error)
+  try {
+    await sbFetch('/auth/v1/logout', 'POST', null, {
+      'Authorization': 'Bearer ' + _session?.access_token
+    });
+    console.log('[SBDB] logout completed');
+  } catch(_) {}
+
+  // Bersihkan state lokal
+  _session  = null;
+  _userRole = null;
+  localStorage.removeItem('sideva_session_v3');
+  localStorage.removeItem('sideva_sb_session');
+  localStorage.removeItem('sideva_role');
+  localStorage.removeItem('sideva_current_opd_id');
+  _stopRealtime();
+  console.log('[SBDB] local session and storage cleared');
+}
+{
+  try { console.log('[SBDB] sbLogout invoked'); } catch(_) {}
   // Sync gambar kop surat ke Supabase sebelum session dihapus,
   // agar tersedia kembali saat login ulang dari device mana pun.
   try {
