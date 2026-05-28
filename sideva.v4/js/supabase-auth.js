@@ -1,5 +1,5 @@
 // ============================================================
-//  SI-DEVA — Supabase Auth Layer v2.0 (FIXED GLOBAL)
+//  SI-DEVA — Supabase Auth Layer v2.0 (FIXED FINAL)
 // ============================================================
 'use strict';
 
@@ -10,32 +10,22 @@ window.SBAuth = {
     isLoggedIn: () => false
 };
 
-// 2. Fungsi Logout Global — FIXED
+// 2. Fungsi Logout Global — FINAL FIX (skip REST, langsung clear)
 window.doCloudLogout = async function() {
-    try { console.log('[SBAuth] doCloudLogout invoked'); } catch(_) {}
 
     // STEP 1: Panggil sbLogout() dari supabase-db.js
     if (typeof sbLogout === 'function') {
         try {
-            console.log('[SBAuth] calling sbLogout()');
             await sbLogout();
-            console.log('[SBAuth] sbLogout() completed');
         } catch(e) {
             console.warn('sbLogout error:', e);
         }
     }
 
-    // STEP 1b: Jika ada session sync cloud terpisah, logout juga
-    if (typeof syncLogout === 'function') {
-        try {
-            console.log('[SBAuth] calling syncLogout()');
-            await syncLogout();
-            console.log('[SBAuth] syncLogout() completed');
-        } catch(e) {
-            console.warn('syncLogout error:', e);
-        }
-    }
+    // STEP 2: Bersihkan SEMUA localStorage
+    try { localStorage.clear(); } catch(e) {}
 
+<<<<<<< HEAD
     // STEP 2: Logout via REST API langsung (backup)
     const token = (typeof _session !== 'undefined' && _session?.access_token)
         ? _session.access_token
@@ -86,36 +76,30 @@ window.doCloudLogout = async function() {
     } catch(e) {}
 
     // STEP 4: Bersihkan sessionStorage
+=======
+    // STEP 3: Bersihkan sessionStorage
+>>>>>>> 3c208f827e15fea87e6521916d33fbfee656d0c8
     try { sessionStorage.clear(); } catch(e) {}
 
-    // STEP 5: Hapus cookie
+    // STEP 4: Hapus cookie
     try {
-        const cookieNames = document.cookie.split(';').map(c => c.trim().split('=')[0]).filter(Boolean);
-        const domains = [window.location.hostname, '.' + window.location.hostname];
-        const paths = ['/', window.location.pathname, window.location.pathname.replace(/\/[^/]*$/, '/')];
-        cookieNames.forEach(name => {
-            domains.forEach(domain => {
-                paths.forEach(path => {
-                    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=${path};domain=${domain};`;
-                    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=${path};`;
-                });
-            });
+        document.cookie.split(';').forEach(c => {
+            const name = c.trim().split('=')[0];
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
         });
     } catch(e) {}
 
-    // STEP 6: Reset SBAuth state
+    // STEP 5: Reset SBAuth state
     window.SBAuth = {
         isAdmin: () => false,
         getRole: () => 'viewer',
         isLoggedIn: () => false
     };
 
-    // STEP 7: Reset variable memory
-    try { if (typeof _session  !== 'undefined') _session  = null; } catch(e) {}
-    try { if (typeof _userRole !== 'undefined') _userRole = null; } catch(e) {}
-    try { console.log('[SBAuth] cleared JS session and role variables'); } catch(_) {}
+    // STEP 6: Reset variable memory
+    try { _session  = null; } catch(e) {}
+    try { _userRole = null; } catch(e) {}
 
-    // STEP 8: Hard redirect ke index file di folder saat ini agar logout valid dari halaman /pages/*.html
-    try { console.log('[SBAuth] redirecting to index.html in current folder'); } catch(_) {}
-    setTimeout(() => window.location.replace(new URL('index.html', window.location.href).href), 150);
+    // STEP 7: Hard redirect
+    window.location.href = 'index.html';
 };

@@ -157,6 +157,37 @@ async function sbRegister(email, password) {
 
 async function sbLogout() {
   try { console.log('[SBDB] sbLogout invoked'); } catch(_) {}
+
+  // Sync gambar kop surat ke Supabase sebelum session dihapus
+  try {
+    const kopImg = localStorage.getItem('sideva_kop_surat_img');
+    if (kopImg && _session?.access_token) {
+      const cfgToSync = { ...(typeof appConfig !== 'undefined' ? appConfig : {}), _kopSuratImg: kopImg };
+      console.log('[SBDB] syncing kop surat image before logout');
+      await sbSaveConfig(cfgToSync);
+    }
+  } catch(_) {}
+
+  // Panggil endpoint logout Supabase (tanpa credentials:include agar tidak CORS error)
+  try {
+    await sbFetch('/auth/v1/logout', 'POST', null, {
+      'Authorization': 'Bearer ' + _session?.access_token
+    });
+    console.log('[SBDB] logout completed');
+  } catch(_) {}
+
+  // Bersihkan state lokal
+  _session  = null;
+  _userRole = null;
+  localStorage.removeItem('sideva_session_v3');
+  localStorage.removeItem('sideva_sb_session');
+  localStorage.removeItem('sideva_role');
+  localStorage.removeItem('sideva_current_opd_id');
+  _stopRealtime();
+  console.log('[SBDB] local session and storage cleared');
+}
+{
+  try { console.log('[SBDB] sbLogout invoked'); } catch(_) {}
   // Sync gambar kop surat ke Supabase sebelum session dihapus,
   // agar tersedia kembali saat login ulang dari device mana pun.
   try {
@@ -175,6 +206,7 @@ async function sbLogout() {
   } catch(_) {}
   // Call local proxy endpoint to avoid CORS blocking
   try {
+<<<<<<< HEAD
     console.log('[SBDB] calling /api/logout proxy to clear server cookies');
     const res = await fetch('/api/logout', { method: 'POST', credentials: 'include' });
     console.log('[SBDB] proxy logout response', { status: res.status, ok: res.ok });
@@ -191,6 +223,8 @@ async function sbLogout() {
       console.warn('[SBDB] fallback logout also failed:', e2);
     }
   }
+=======
+>>>>>>> 3c208f827e15fea87e6521916d33fbfee656d0c8
 
   _session = null;
   _userRole = null;
@@ -487,10 +521,21 @@ if (!window._sbInitRegistered) {
     window._sbReady = true;
 
     if (ok) {
+      // User sudah login — load data dan render app
       await loadAllData();
       _startPolling();
       if (typeof renderAll === 'function') renderAll();
       if (typeof updateBadges === 'function') updateBadges();
+    } else {
+      // Tidak ada sesi — sembunyikan app, tampilkan login
+      const appEl = document.getElementById('app') ||
+                    document.querySelector('.app-container') ||
+                    document.querySelector('.sidebar') ||
+                    document.querySelector('main');
+      if (appEl) appEl.style.display = 'none';
+
+      // Trigger event agar file lain bisa tampilkan login modal
+      window.dispatchEvent(new CustomEvent('sideva:show-login'));
     }
 
     window.dispatchEvent(new CustomEvent('sb-ready', { detail: { loggedIn: ok, role: _userRole } }));
