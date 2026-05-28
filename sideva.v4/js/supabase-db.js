@@ -186,55 +186,6 @@ async function sbLogout() {
   _stopRealtime();
   console.log('[SBDB] local session and storage cleared');
 }
-{
-  try { console.log('[SBDB] sbLogout invoked'); } catch(_) {}
-  // Sync gambar kop surat ke Supabase sebelum session dihapus,
-  // agar tersedia kembali saat login ulang dari device mana pun.
-  try {
-    const kopImg = localStorage.getItem('sideva_kop_surat_img');
-    if (kopImg && _session?.access_token) {
-      const cfgToSync = { ...(typeof appConfig !== 'undefined' ? appConfig : {}), _kopSuratImg: kopImg };
-      console.log('[SBDB] syncing kop surat image before logout');
-      await sbSaveConfig(cfgToSync);
-    }
-  } catch(_) {}
-
-  try {
-    console.log('[SBDB] calling sbFetch /auth/v1/logout (JS API)');
-    await sbFetch('/auth/v1/logout', 'POST', null, { 'Authorization': 'Bearer ' + _session?.access_token });
-    console.log('[SBDB] sbFetch logout completed');
-  } catch(_) {}
-  // Call local proxy endpoint to avoid CORS blocking
-  try {
-<<<<<<< HEAD
-    console.log('[SBDB] calling /api/logout proxy to clear server cookies');
-    const res = await fetch('/api/logout', { method: 'POST', credentials: 'include' });
-    console.log('[SBDB] proxy logout response', { status: res.status, ok: res.ok });
-  } catch(e) {
-    console.warn('[SBDB] proxy logout failed:', e);
-    // Fallback: attempt direct logout if proxy unavailable
-    try {
-      const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
-      if (_session?.access_token) headers['Authorization'] = 'Bearer ' + _session.access_token;
-      console.log('[SBDB] fallback: calling Supabase logout directly');
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
-      console.log('[SBDB] fallback logout response', { status: res.status, ok: res.ok });
-    } catch(e2) {
-      console.warn('[SBDB] fallback logout also failed:', e2);
-    }
-  }
-=======
->>>>>>> 3c208f827e15fea87e6521916d33fbfee656d0c8
-
-  _session = null;
-  _userRole = null;
-  localStorage.removeItem('sideva_session_v3');
-  localStorage.removeItem('sideva_sb_session');
-  localStorage.removeItem('sideva_role');
-  localStorage.removeItem('sideva_current_opd_id');
-  _stopRealtime();
-  try { console.log('[SBDB] local session and storage cleared'); } catch(_) {}
-}
 
 async function sbRefreshToken() {
   if (!_session?.refresh_token) return false;
