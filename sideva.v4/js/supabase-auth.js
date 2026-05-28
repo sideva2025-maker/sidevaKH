@@ -12,11 +12,14 @@ window.SBAuth = {
 
 // 2. Fungsi Logout Global — FIXED
 window.doCloudLogout = async function() {
+    try { console.log('[SBAuth] doCloudLogout invoked'); } catch(_) {}
 
     // STEP 1: Panggil sbLogout() dari supabase-db.js
     if (typeof sbLogout === 'function') {
         try {
+            console.log('[SBAuth] calling sbLogout()');
             await sbLogout();
+            console.log('[SBAuth] sbLogout() completed');
         } catch(e) {
             console.warn('sbLogout error:', e);
         }
@@ -25,7 +28,9 @@ window.doCloudLogout = async function() {
     // STEP 1b: Jika ada session sync cloud terpisah, logout juga
     if (typeof syncLogout === 'function') {
         try {
+            console.log('[SBAuth] calling syncLogout()');
             await syncLogout();
+            console.log('[SBAuth] syncLogout() completed');
         } catch(e) {
             console.warn('syncLogout error:', e);
         }
@@ -42,11 +47,9 @@ window.doCloudLogout = async function() {
         try {
             const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
-            await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, {
-                method: 'POST',
-                headers,
-                credentials: 'include'
-            });
+            console.log('[SBAuth] calling REST logout', { url: `${SUPABASE_URL}/auth/v1/logout?scope=global`, headers });
+            const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
+            console.log('[SBAuth] REST logout response', { status: res.status, ok: res.ok });
         } catch(e) {
             console.warn('REST logout error:', e);
         }
@@ -102,7 +105,9 @@ window.doCloudLogout = async function() {
     // STEP 7: Reset variable memory
     try { if (typeof _session  !== 'undefined') _session  = null; } catch(e) {}
     try { if (typeof _userRole !== 'undefined') _userRole = null; } catch(e) {}
+    try { console.log('[SBAuth] cleared JS session and role variables'); } catch(_) {}
 
     // STEP 8: Hard redirect ke index file di folder saat ini agar logout valid dari halaman /pages/*.html
+    try { console.log('[SBAuth] redirecting to index.html in current folder'); } catch(_) {}
     setTimeout(() => window.location.replace(new URL('index.html', window.location.href).href), 150);
 };

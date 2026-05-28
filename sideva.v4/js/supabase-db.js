@@ -156,26 +156,31 @@ async function sbRegister(email, password) {
 }
 
 async function sbLogout() {
+  try { console.log('[SBDB] sbLogout invoked'); } catch(_) {}
   // Sync gambar kop surat ke Supabase sebelum session dihapus,
   // agar tersedia kembali saat login ulang dari device mana pun.
   try {
     const kopImg = localStorage.getItem('sideva_kop_surat_img');
     if (kopImg && _session?.access_token) {
       const cfgToSync = { ...(typeof appConfig !== 'undefined' ? appConfig : {}), _kopSuratImg: kopImg };
+      console.log('[SBDB] syncing kop surat image before logout');
       await sbSaveConfig(cfgToSync);
     }
   } catch(_) {}
 
   try {
+    console.log('[SBDB] calling sbFetch /auth/v1/logout (JS API)');
     await sbFetch('/auth/v1/logout', 'POST', null, { 'Authorization': 'Bearer ' + _session?.access_token });
+    console.log('[SBDB] sbFetch logout completed');
   } catch(_) {}
-
   // Also request server logout with credentials included to clear HttpOnly cookies set by Supabase.
   try {
     const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
     if (_session?.access_token) headers['Authorization'] = 'Bearer ' + _session.access_token;
-    await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
-  } catch(_) {}
+    console.log('[SBDB] calling server logout endpoint to clear HttpOnly cookies', { url: `${SUPABASE_URL}/auth/v1/logout?scope=global` });
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
+    console.log('[SBDB] server logout response', { status: res.status, ok: res.ok });
+  } catch(e) { console.warn('[SBDB] server logout fetch failed', e); }
 
   _session = null;
   _userRole = null;
@@ -184,6 +189,7 @@ async function sbLogout() {
   localStorage.removeItem('sideva_role');
   localStorage.removeItem('sideva_current_opd_id');
   _stopRealtime();
+  try { console.log('[SBDB] local session and storage cleared'); } catch(_) {}
 }
 
 async function sbRefreshToken() {
