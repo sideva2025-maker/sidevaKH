@@ -173,14 +173,24 @@ async function sbLogout() {
     await sbFetch('/auth/v1/logout', 'POST', null, { 'Authorization': 'Bearer ' + _session?.access_token });
     console.log('[SBDB] sbFetch logout completed');
   } catch(_) {}
-  // Also request server logout with credentials included to clear HttpOnly cookies set by Supabase.
+  // Call local proxy endpoint to avoid CORS blocking
   try {
-    const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
-    if (_session?.access_token) headers['Authorization'] = 'Bearer ' + _session.access_token;
-    console.log('[SBDB] calling server logout endpoint to clear HttpOnly cookies', { url: `${SUPABASE_URL}/auth/v1/logout?scope=global` });
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
-    console.log('[SBDB] server logout response', { status: res.status, ok: res.ok });
-  } catch(e) { console.warn('[SBDB] server logout fetch failed', e); }
+    console.log('[SBDB] calling /api/logout proxy to clear server cookies');
+    const res = await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+    console.log('[SBDB] proxy logout response', { status: res.status, ok: res.ok });
+  } catch(e) {
+    console.warn('[SBDB] proxy logout failed:', e);
+    // Fallback: attempt direct logout if proxy unavailable
+    try {
+      const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+      if (_session?.access_token) headers['Authorization'] = 'Bearer ' + _session.access_token;
+      console.log('[SBDB] fallback: calling Supabase logout directly');
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
+      console.log('[SBDB] fallback logout response', { status: res.status, ok: res.ok });
+    } catch(e2) {
+      console.warn('[SBDB] fallback logout also failed:', e2);
+    }
+  }
 
   _session = null;
   _userRole = null;

@@ -41,17 +41,25 @@ window.doCloudLogout = async function() {
         ? _session.access_token
         : null;
 
-    // Always attempt server-side logout (use credentials include to clear HttpOnly cookies),
-    // even if token is not available in JS memory.
-    if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
-        try {
-            const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-            console.log('[SBAuth] calling REST logout', { url: `${SUPABASE_URL}/auth/v1/logout?scope=global`, headers });
-            const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
-            console.log('[SBAuth] REST logout response', { status: res.status, ok: res.ok });
-        } catch(e) {
-            console.warn('REST logout error:', e);
+    // Call local proxy endpoint to avoid CORS blocking
+    // Proxy at /api/logout will forward logout request to Supabase with credentials
+    try {
+        console.log('[SBAuth] calling /api/logout proxy endpoint');
+        const res = await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+        console.log('[SBAuth] proxy logout response', { status: res.status, ok: res.ok });
+    } catch(e) {
+        console.warn('[SBAuth] proxy logout error:', e);
+        // Fallback: attempt direct logout to Supabase if proxy unavailable
+        if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+            try {
+                console.log('[SBAuth] fallback: calling REST logout directly');
+                const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+                const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
+                console.log('[SBAuth] fallback REST logout response', { status: res.status, ok: res.ok });
+            } catch(e2) {
+                console.warn('[SBAuth] fallback logout also failed:', e2);
+            }
         }
     }
 

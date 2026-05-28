@@ -84,10 +84,20 @@ async function syncRegister(email, password) {
 // Logout
 async function syncLogout() {
   try {
-    if (supabaseSession) {
-      await sbRequest('/auth/v1/logout', 'POST', null, supabaseSession.access_token);
-    }
-  } catch (_) {}
+    // Call local proxy endpoint to avoid CORS blocking
+    console.log('[SyncDB] calling /api/logout proxy');
+    const res = await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+    console.log('[SyncDB] proxy logout response', { status: res.status, ok: res.ok });
+  } catch (e) {
+    console.warn('[SyncDB] proxy logout failed:', e);
+    // Fallback: attempt direct logout
+    try {
+      if (supabaseSession) {
+        console.log('[SyncDB] fallback: calling sbRequest logout');
+        await sbRequest('/auth/v1/logout', 'POST', null, supabaseSession.access_token);
+      }
+    } catch (e2) { console.warn('[SyncDB] fallback logout failed:', e2); }
+  }
   supabaseSession = null;
   syncUserId = null;
   syncOnline = false;
