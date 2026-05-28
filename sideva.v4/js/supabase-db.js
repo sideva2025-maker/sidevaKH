@@ -170,6 +170,13 @@ async function sbLogout() {
     await sbFetch('/auth/v1/logout', 'POST', null, { 'Authorization': 'Bearer ' + _session?.access_token });
   } catch(_) {}
 
+  // Also request server logout with credentials included to clear HttpOnly cookies set by Supabase.
+  try {
+    const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+    if (_session?.access_token) headers['Authorization'] = 'Bearer ' + _session.access_token;
+    await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
+  } catch(_) {}
+
   _session = null;
   _userRole = null;
   localStorage.removeItem('sideva_session_v3');

@@ -36,15 +36,15 @@ window.doCloudLogout = async function() {
         ? _session.access_token
         : null;
 
-    if (token && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+    // Always attempt server-side logout (use credentials include to clear HttpOnly cookies),
+    // even if token is not available in JS memory.
+    if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
         try {
+            const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
             await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, {
                 method: 'POST',
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
+                headers,
                 credentials: 'include'
             });
         } catch(e) {
