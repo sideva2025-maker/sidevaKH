@@ -8362,26 +8362,29 @@ function _injectRoleUI() {
   topbar.insertBefore(badge, topbar.firstChild);
 }
 function setRole(role) {
- // Hanya simpan jika role valid dari session
-if (role && role !== 'viewer' || typeof getRole === 'function' && getRole()) {
-    localStorage.setItem('sideva_role', role);
-}
-  localStorage.setItem('sideva_role', role);
+  _currentRole = role || 'viewer';
+  localStorage.setItem('sideva_role', _currentRole);
   const badge = document.getElementById('role-indicator');
-  if (badge) { badge.textContent = ROLE_LABELS[role] || role; badge.className = 'role-badge role-' + role; }
+  if (badge) { badge.textContent = ROLE_LABELS[_currentRole] || _currentRole; badge.className = 'role-badge role-' + _currentRole; }
   applyLegacyRoleUI();
   if (typeof window.applyRoleUI === 'function') window.applyRoleUI();
-  if (typeof toast === 'function') toast('Role: ' + (ROLE_LABELS[role] || role), 'success');
+  if (typeof toast === 'function') toast('Role: ' + (ROLE_LABELS[_currentRole] || _currentRole), 'success');
 }
 function getCurrentRole() { return _currentRole; }
 function canEdit()  { return _currentRole !== 'viewer'; }
-function isAdminRole() { return _currentRole === 'admin'; }
+function isAdminRole() { return _currentRole === 'admin' || _currentRole === 'super_admin'; }
 function applyLegacyRoleUI() {
   // Nonaktifkan tombol aksi jika viewer
   const sel = '.btn-danger,[onclick*="deleteRow"],[onclick*="deleteHarga"],[onclick*="deletePaket"],[onclick*="deleteRincian"],[onclick*="deletePenyedia"]';
   document.querySelectorAll(sel).forEach(btn => {
     if (!canEdit()) { btn.disabled = true; btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none'; }
     else            { btn.disabled = false; btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+  });
+}
+function applyRoleUI() {
+  const showAdmin = isAdminRole();
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.classList.toggle('sideva-visible', showAdmin);
   });
 }
 function openRoleDialog() {

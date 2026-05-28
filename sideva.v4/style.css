@@ -1724,5 +1724,7 @@ kbd {
 }
 
 /* ── Admin-only menu: hidden by default, shown via JS ── */
-.nav-item.admin-only { display: none !important; }
+.nav-item.admin-only,
+.nav-section-label.admin-only { display: none !important; }
 .nav-item.admin-only.sideva-visible { display: flex !important; }
+.nav-section-label.admin-only.sideva-visible { display: block !important; }
