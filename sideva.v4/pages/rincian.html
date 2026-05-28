@@ -1,0 +1,59 @@
+<!-- ═══════════════════════════════════════════════════════════
+     RINCIAN BELANJA — SI-DEVA v3.0
+     ═══════════════════════════════════════════════════════════ -->
+
+<div class="table-container">
+
+  <!-- ── HEADER: Judul + Filter + Cari ──────────────────────── -->
+  <div class="table-header">
+    <div class="table-header-title">🧾 Rincian Belanja</div>
+    <div class="search-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-rincian"
+          placeholder="Cari item barang…"
+          oninput="filterRincian()">
+      </div>
+      <div class="search-wrap" style="min-width:170px;">
+        <span class="search-icon">🔎</span>
+        <input type="text" id="filter-rup-rincian"
+          placeholder="Cari No RUP…"
+          oninput="filterRincian()"
+          style="padding-left:28px;">
+      </div>
+      <select class="filter-select" id="filter-rupdd-rincian" onchange="filterRincian()" style="min-width:210px;">
+        <option value="">— Pilih RUP + Paket —</option>
+      </select>
+      <select class="filter-select" id="filter-satuan-rincian" onchange="filterRincian()">
+        <option value="">Semua Satuan</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── TABEL ───────────────────────────────────────────────── -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="no-col" onclick="sortTable('rincian','no')">No</th>
+          <th onclick="sortTable('rincian','rup')">RUP</th>
+          <th onclick="sortTable('rincian','itemBarang')">Item Barang &amp; Spek</th>
+          <th onclick="sortTable('rincian','vol')">Vol</th>
+          <th onclick="sortTable('rincian','satuan')">Satuan</th>
+          <th onclick="sortTable('rincian','hargaSatuan')">Harga Satuan</th>
+          <th onclick="sortTable('rincian','jumlah')">Jumlah (Rp)</th>
+          <th onclick="sortTable('rincian','user')">User</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-rincian"></tbody>
+    </table>
+  </div>
+
+  <!-- ── FOOTER: Info + Paginasi ────────────────────────────── -->
+  <div class="table-footer">
+    <div class="table-info" id="info-rincian"></div>
+    <div class="pagination" id="pag-rincian"></div>
+  </div>
+
+</div>

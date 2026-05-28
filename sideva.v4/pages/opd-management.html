@@ -1,0 +1,25 @@
+<script>
+(function() {
+  function tryInit() {
+    const el = document.getElementById('page-opd-management');
+    if (!el) return;
+    if (typeof renderOpdManagement === 'function') {
+      renderOpdManagement();
+    } else {
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)">⏳ Memuat modul OPD...</div>';
+      setTimeout(tryInit, 200);
+    }
+  }
+
+  window.addEventListener('sideva:page-changed', (e) => {
+    if (e?.detail?.page !== 'opd-management') return;
+    setTimeout(tryInit, 60);
+  });
+
+  window.addEventListener('sb-ready', function(e) {
+    if (!e.detail?.loggedIn) return;
+    const el = document.getElementById('page-opd-management');
+    if (el && el.classList.contains('active')) setTimeout(tryInit, 100);
+  });
+})();
+</script>

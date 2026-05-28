@@ -1,0 +1,723 @@
+<!-- ═══════════════════════════════════════════════════════════
+     PENGATURAN INSTANSI — SI-DEVA v3.0
+     Urutan section:
+       1. Intro Banner
+       2. Identitas Instansi
+       3. Pengaturan Anggaran
+       4. Upload Kop Surat
+       5. Pratinjau Kop Surat
+       6. Notifikasi Telegram
+       7. Notifikasi WhatsApp (CallMeBot)
+       8. Preferensi Notifikasi
+       9. Tombol Aksi (Simpan / Reset)
+      10. Script logika Telegram
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- ── 1. INTRO ───────────────────────────────────────────────── -->
+<div class="cfg-section-intro">
+  <div class="cfg-section-intro-icon">⚙️</div>
+  <div class="cfg-section-intro-text">
+    <h3>Pengaturan Instansi</h3>
+    <p>
+      Konfigurasi identitas instansi dan parameter anggaran yang digunakan
+      di seluruh dokumen, kop surat, dan laporan SI-DEVA.
+    </p>
+  </div>
+</div>
+
+<!-- ── 2. IDENTITAS INSTANSI ──────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <div class="card-title">🏛️ Identitas Instansi</div>
+    <span class="card-badge">Informasi Resmi</span>
+  </div>
+
+  <div class="card-body">
+    <div class="form-grid" style="gap:20px;">
+
+      <!-- Nama Lengkap — lebar penuh -->
+      <div class="form-group full">
+        <label>Nama Lengkap Instansi <span class="req-star">*</span></label>
+        <input class="form-control" id="cfg-namaInstansi"
+          placeholder="cth: Badan Perencanaan Pembangunan, Riset dan Inovasi Daerah">
+        <div class="form-hint">
+          Nama resmi sesuai Peraturan Daerah — tampil di kop surat dan seluruh dokumen
+        </div>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- Singkatan -->
+      <div class="form-group">
+        <label>Singkatan / Akronim <span class="req-star">*</span></label>
+        <input class="form-control" id="cfg-singkatan"
+          placeholder="cth: BAPPERIDA, DPUPR, DISDIK">
+        <div class="form-hint">Tampil di sidebar, nomor dokumen, dan footer</div>
+      </div>
+
+      <!-- Kabupaten / Kota -->
+      <div class="form-group">
+        <label>Kabupaten / Kota <span class="req-star">*</span></label>
+        <input class="form-control" id="cfg-kabupaten"
+          placeholder="cth: Kabupaten Kapuas Hulu">
+        <div class="form-hint">Tulis lengkap dengan awalan "Kabupaten …" atau "Kota …"</div>
+      </div>
+
+      <!-- Alamat Kantor — lebar penuh -->
+      <div class="form-group full">
+        <label>Alamat Kantor</label>
+        <textarea class="form-control" id="cfg-alamat" rows="2"
+          placeholder="cth: Jalan Antasari Nomor 02, Putussibau, Kabupaten Kapuas Hulu, Kalimantan Barat 78711"></textarea>
+      </div>
+
+      <!-- Telepon -->
+      <div class="form-group">
+        <label>Nomor Telepon</label>
+        <input class="form-control" id="cfg-telepon"
+          placeholder="cth: (0567) 21106">
+        <div class="form-hint">Tampil di kop surat bagian bawah</div>
+      </div>
+
+      <!-- Website -->
+      <div class="form-group">
+        <label>Website</label>
+        <input class="form-control" id="cfg-website"
+          placeholder="cth: kapuashulukab.go.id">
+        <div class="form-hint">Tanpa awalan "https://"</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cfg-card-footer">
+    Field bertanda bintang (<span style="color:var(--gold);font-weight:700;">*</span>)
+    wajib diisi sebelum menyimpan
+  </div>
+</div>
+
+<!-- ── 3. PENGATURAN ANGGARAN ─────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <div class="card-title">📅 Pengaturan Anggaran</div>
+    <span class="card-badge">Tahun Berjalan</span>
+  </div>
+
+  <div class="card-body">
+    <div class="form-grid" style="gap:20px;">
+
+      <!-- Sumber Dana -->
+      <div class="form-group">
+        <label>Sumber Dana</label>
+        <select class="form-control" id="cfg-sumberDana">
+          <option value="APBD">APBD — Anggaran Pendapatan dan Belanja Daerah</option>
+          <option value="APBN">APBN — Anggaran Pendapatan dan Belanja Negara</option>
+          <option value="DAK">DAK — Dana Alokasi Khusus</option>
+          <option value="DAU">DAU — Dana Alokasi Umum</option>
+          <option value="Hibah">Hibah</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+        <div class="form-hint">Tampil di dokumen Penetapan dan Formulir DPP</div>
+      </div>
+
+      <!-- Tahun Anggaran -->
+      <div class="form-group">
+        <label>Tahun Anggaran</label>
+        <input class="form-control" type="number" id="cfg-tahunAnggaran"
+          placeholder="2026" min="2000" max="2099"
+          style="font-family:var(--font-mono);font-size:20px;font-weight:600;
+                 color:var(--gold-light);letter-spacing:1px;text-align:center;">
+        <div class="form-hint">Berlaku untuk seluruh dokumen dalam sistem ini</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── 4. UPLOAD KOP SURAT ─────────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <div class="card-title">🖼️ Upload Gambar Kop Surat</div>
+    <span class="card-badge">Prioritas Utama</span>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+      Upload gambar kop surat resmi instansi (format PNG, JPG, atau WEBP). Gambar ini akan
+      digunakan di seluruh dokumen cetak menggantikan kop teks.
+      Ukuran ideal: <strong>lebar penuh, tinggi proporsional</strong>.
+    </p>
+
+    <!-- Drop zone -->
+    <div id="kop-upload-zone"
+      onclick="document.getElementById('kop-file-input').click()"
+      ondragover="event.preventDefault();this.classList.add('kop-drag-over')"
+      ondragleave="this.classList.remove('kop-drag-over')"
+      ondrop="handleKopDrop(event)"
+      style="border:2px dashed var(--border2);border-radius:var(--radius-lg);
+             padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;
+             background:var(--gold-subtle2);position:relative;">
+      <div style="font-size:32px;margin-bottom:8px;">📄</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">
+        Klik atau seret gambar ke sini
+      </div>
+      <div style="font-size:12px;color:var(--text3);">
+        PNG, JPG, WEBP · Maks. 5 MB · Disimpan otomatis di browser
+      </div>
+      <input id="kop-file-input" type="file" accept="image/png,image/jpeg,image/webp"
+        style="display:none;" onchange="handleKopFileSelect(event)">
+    </div>
+
+    <!-- Preview gambar aktif -->
+    <div id="kop-img-preview-wrap" style="display:none;margin-top:20px;">
+      <div style="font-size:11px;font-weight:600;color:var(--gold-dim);
+                  text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">
+        Gambar Aktif
+      </div>
+      <div style="border:1px solid var(--border);border-radius:var(--radius);
+                  overflow:hidden;background:#fff;">
+        <img id="kop-img-preview" src="" alt="Pratinjau kop surat"
+          style="width:100%;display:block;max-height:220px;object-fit:contain;">
+      </div>
+      <div id="kop-img-meta" style="font-size:11px;color:var(--text3);margin-top:6px;"></div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm"
+          onclick="document.getElementById('kop-file-input').click()"
+          style="font-size:12px;">
+          🔄 Ganti Gambar
+        </button>
+        <button class="btn btn-secondary btn-sm"
+          onclick="hapusKopSurat()"
+          style="font-size:12px;color:var(--red);border-color:var(--red);background:var(--red-subtle);">
+          🗑️ Hapus Gambar
+        </button>
+      </div>
+    </div>
+
+    <!-- Pesan status upload -->
+    <div id="kop-upload-msg"
+      style="display:none;margin-top:12px;font-size:12px;
+             padding:10px 14px;border-radius:var(--radius);"></div>
+  </div>
+</div>
+
+<!-- ── 5. PRATINJAU KOP SURAT ─────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+    <div class="card-title">👁️ Pratinjau Kop Surat</div>
+    <span class="card-badge">Live Preview</span>
+  </div>
+
+  <div class="card-body" style="padding-bottom:16px;">
+    <div class="kop-preview-shell">
+      <!-- Toolbar dekoratif -->
+      <div class="kop-preview-toolbar">
+        <div class="kop-preview-dot"></div>
+        <div class="kop-preview-dot"></div>
+        <div class="kop-preview-dot"></div>
+        <span class="kop-preview-label" id="kop-preview-label-text">
+          Pratinjau kop surat (teks fallback) — berdasarkan data yang diisi di atas
+        </span>
+      </div>
+      <!-- Area render kop surat -->
+      <div id="kop-preview-area">
+        <span style="font-size:12px;color:#bbb;font-style:italic;font-family:Georgia,serif;">
+          Klik <strong>Simpan Pengaturan</strong> atau upload gambar untuk melihat pratinjau.
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 6. NOTIFIKASI TELEGRAM ─────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;" id="card-telegram">
+  <div class="card-header">
+    <div class="card-title">📬 Notifikasi Telegram</div>
+    <span class="card-badge">Opsional</span>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.7;">
+      Aktifkan notifikasi otomatis ke Telegram setiap kali operator menginput
+      <strong>Data Paket</strong> atau <strong>Rincian Belanja</strong>.
+      Notifikasi dikirim langsung ke akun / grup Telegram admin.
+    </p>
+
+    <!-- Toggle aktif / nonaktif -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;
+                padding:14px 16px;background:var(--gold-subtle2);
+                border-radius:var(--radius);border:1px solid var(--border2);">
+      <label class="tg-toggle-wrap"
+        style="position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;">
+        <input type="checkbox" id="tg-aktif" onchange="tgToggleAktif(this.checked)"
+          style="opacity:0;width:0;height:0;position:absolute;">
+        <span id="tg-toggle-track"
+          style="position:absolute;inset:0;cursor:pointer;border-radius:26px;
+                 background:var(--border2);transition:.3s;">
+          <span id="tg-toggle-thumb"
+            style="position:absolute;top:3px;left:3px;width:20px;height:20px;
+                   border-radius:50%;background:#fff;transition:.3s;
+                   box-shadow:0 1px 4px rgba(0,0,0,.3);"></span>
+        </span>
+      </label>
+      <div>
+        <div id="tg-aktif-label"
+          style="font-size:13px;font-weight:600;color:var(--text);">
+          Notifikasi Telegram <span style="color:var(--red);">Nonaktif</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);">
+          Aktifkan untuk mulai menerima notifikasi di Telegram
+        </div>
+      </div>
+    </div>
+
+    <!-- Form konfigurasi bot -->
+    <div class="form-grid" style="gap:18px;">
+
+      <!-- Bot Token -->
+      <div class="form-group full">
+        <label>Bot Token <span class="req-star">*</span></label>
+        <div style="display:flex;gap:8px;align-items:stretch;">
+          <input class="form-control" id="tg-botToken" type="password"
+            placeholder="cth: 7123456789:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            style="font-family:var(--font-mono);font-size:12px;flex:1;">
+          <button class="btn btn-secondary btn-sm" id="tg-toggle-eye"
+            onclick="tgToggleTokenVisible()"
+            style="padding:0 12px;font-size:16px;" title="Tampilkan/sembunyikan token">
+            👁
+          </button>
+        </div>
+        <div class="form-hint">
+          Dapatkan dari
+          <a href="https://t.me/BotFather" target="_blank" style="color:var(--gold);">@BotFather</a>
+          di Telegram. Buat bot baru → salin token yang diberikan.
+        </div>
+      </div>
+
+      <!-- Chat ID -->
+      <div class="form-group">
+        <label>Chat ID Admin <span class="req-star">*</span></label>
+        <input class="form-control" id="tg-chatId"
+          placeholder="cth: -1001234567890 atau 123456789"
+          style="font-family:var(--font-mono);">
+        <div class="form-hint">
+          Gunakan
+          <a href="https://t.me/userinfobot" target="_blank" style="color:var(--gold);">@userinfobot</a>
+          untuk ID pribadi, atau
+          <a href="https://t.me/RawDataBot" target="_blank" style="color:var(--gold);">@RawDataBot</a>
+          untuk ID grup (diawali tanda minus <code>-</code>).
+        </div>
+      </div>
+
+      <!-- Tombol test -->
+      <div class="form-group" style="display:flex;align-items:flex-end;">
+        <div style="width:100%;">
+          <label style="opacity:0;user-select:none;">_</label>
+          <button class="btn btn-secondary" id="tg-btn-test"
+            onclick="tgTestKirim()"
+            style="width:100%;gap:8px;justify-content:center;">
+            <span>📨</span> Kirim Pesan Test
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Status hasil test -->
+    <div id="tg-test-status"
+      style="display:none;margin-top:14px;font-size:12px;
+             padding:10px 14px;border-radius:var(--radius);"></div>
+
+    <!-- Panduan setup bot -->
+    <details style="margin-top:18px;">
+      <summary style="font-size:12px;font-weight:600;color:var(--gold-dim);
+                      cursor:pointer;user-select:none;">
+        📖 Cara setup Bot Telegram (klik untuk buka)
+      </summary>
+      <div style="margin-top:12px;font-size:12px;color:var(--text2);line-height:1.8;
+                  background:var(--surface2);padding:14px;border-radius:var(--radius);
+                  border-left:3px solid var(--gold-dim);">
+        <ol style="margin:0;padding-left:18px;">
+          <li>Buka Telegram, cari <strong>@BotFather</strong> → kirim <code>/newbot</code></li>
+          <li>Ikuti instruksi: masukkan nama &amp; username bot → salin <strong>Bot Token</strong> yang diberikan</li>
+          <li>Untuk Chat ID <em>pribadi</em>: cari <strong>@userinfobot</strong> → kirim <code>/start</code> → salin angka ID-nya</li>
+          <li>Untuk Chat ID <em>grup</em>: tambahkan bot ke grup, lalu cari <strong>@RawDataBot</strong> di grup → salin ID (dimulai <code>-</code>)</li>
+          <li>Pastikan bot sudah ditambahkan ke grup jika menggunakan Chat ID grup</li>
+          <li>Isi token &amp; chat ID di atas → klik <strong>Kirim Pesan Test</strong> → jika berhasil, aktifkan toggle &amp; simpan</li>
+        </ol>
+      </div>
+    </details>
+
+    <!-- Tombol simpan khusus Telegram -->
+    <div style="margin-top:18px;display:flex;justify-content:flex-end;">
+      <button class="btn btn-primary" onclick="tgSimpanPengaturan()" style="gap:8px;">
+        <span>💾</span> Simpan Pengaturan Telegram
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── 7. NOTIFIKASI WHATSAPP ─────────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;" id="wa-settings-panel">
+  <div class="card-header">
+    <div class="card-title">💬 Notifikasi WhatsApp</div>
+    <span class="card-badge">Opsional</span>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.7;">
+      Kirim notifikasi otomatis ke WhatsApp setiap kali operator menginput
+      <strong>Data Paket</strong>, <strong>Rincian Belanja</strong>, atau <strong>Survey Harga</strong>.
+      Menggunakan layanan <strong>CallMeBot</strong> (gratis, tanpa backend).
+    </p>
+
+    <!-- Toggle aktif / nonaktif -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;
+                padding:14px 16px;background:rgba(37,211,102,0.06);
+                border-radius:var(--radius);border:1px solid rgba(37,211,102,0.2);">
+      <label style="position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;">
+        <input type="checkbox" id="wa-enabled" onchange="waSaveEnabled(this.checked)"
+          style="opacity:0;width:0;height:0;position:absolute;">
+        <span id="wa-toggle-track"
+          style="position:absolute;inset:0;cursor:pointer;border-radius:26px;
+                 background:var(--border2);transition:.3s;">
+          <span id="wa-toggle-thumb"
+            style="position:absolute;top:3px;left:3px;width:20px;height:20px;
+                   border-radius:50%;background:#fff;transition:.3s;
+                   box-shadow:0 1px 4px rgba(0,0,0,.3);"></span>
+        </span>
+      </label>
+      <div>
+        <div id="wa-aktif-label" style="font-size:13px;font-weight:600;color:var(--text);">
+          Notifikasi WhatsApp <span style="color:var(--red);">Nonaktif</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);">
+          Aktifkan setelah mengisi nomor &amp; API key di bawah
+        </div>
+      </div>
+    </div>
+
+    <!-- Panduan CallMeBot -->
+    <div style="background:rgba(37,211,102,0.07);border:1px solid rgba(37,211,102,0.22);
+                border-radius:8px;padding:12px 14px;margin-bottom:18px;
+                font-size:12px;line-height:1.8;">
+      <strong>📱 Cara Daftar CallMeBot (sekali saja, GRATIS):</strong><br>
+      1. Simpan nomor <strong>+34 644 59 39 99</strong> di kontak HP Anda<br>
+      2. Kirim pesan WA: <code style="background:rgba(0,0,0,.08);padding:1px 5px;border-radius:3px;">I allow callmebot to send me messages</code><br>
+      3. Tunggu balasan berisi <strong>API Key</strong> (1–2 menit)<br>
+      4. Masukkan nomor &amp; API key di bawah, lalu klik <strong>Simpan &amp; Test</strong>
+    </div>
+
+    <!-- Form konfigurasi -->
+    <div class="form-grid" style="gap:18px;margin-bottom:16px;">
+      <div class="form-group">
+        <label>Nomor WhatsApp <span class="req-star">*</span></label>
+        <input type="text" class="form-control" id="wa-phone"
+          placeholder="628123456789"
+          style="font-family:var(--font-mono);">
+        <div class="form-hint">Format internasional tanpa tanda + (cth: 628123456789)</div>
+      </div>
+      <div class="form-group">
+        <label>API Key CallMeBot <span class="req-star">*</span></label>
+        <input type="text" class="form-control" id="wa-apikey"
+          placeholder="1234567"
+          style="font-family:var(--font-mono);">
+        <div class="form-hint">API key yang dikirim CallMeBot ke WhatsApp Anda</div>
+      </div>
+    </div>
+
+    <!-- Pilihan jenis notifikasi -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:12px;color:var(--text3);font-weight:600;
+                  text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">
+        Kirim notifikasi untuk:
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+                      background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                      border-radius:var(--radius);cursor:pointer;">
+          <input type="checkbox" id="wa-notif-paket"
+            style="width:15px;height:15px;accent-color:#25d366;cursor:pointer;" checked>
+          <span style="font-size:13px;color:var(--text);">📦 Paket pengadaan baru / diperbarui</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+                      background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                      border-radius:var(--radius);cursor:pointer;">
+          <input type="checkbox" id="wa-notif-rincian"
+            style="width:15px;height:15px;accent-color:#25d366;cursor:pointer;" checked>
+          <span style="font-size:13px;color:var(--text);">🧾 Rincian belanja baru ditambahkan</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+                      background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                      border-radius:var(--radius);cursor:pointer;">
+          <input type="checkbox" id="wa-notif-harga"
+            style="width:15px;height:15px;accent-color:#25d366;cursor:pointer;" checked>
+          <span style="font-size:13px;color:var(--text);">🏷️ Survey harga baru ditambahkan</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+                      background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                      border-radius:var(--radius);cursor:pointer;">
+          <input type="checkbox" id="wa-notif-deadline"
+            style="width:15px;height:15px;accent-color:#25d366;cursor:pointer;" checked>
+          <span style="font-size:13px;color:var(--text);">⏰ Peringatan paket mendekati / melewati deadline</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Tombol aksi -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="waSaveSettings()" style="gap:8px;">
+        <span>💾</span> Simpan Pengaturan WA
+      </button>
+      <button class="btn btn-secondary" onclick="waTestSend()" style="gap:8px;">
+        <span>📨</span> Test Kirim WA
+      </button>
+    </div>
+
+    <!-- Status pesan -->
+    <div id="wa-settings-msg"
+      style="display:none;margin-top:12px;font-size:12px;
+             border-radius:6px;padding:8px 12px;border:1px solid;"></div>
+  </div>
+</div>
+
+<!-- ── 8. PREFERENSI NOTIFIKASI ───────────────────────────────── -->
+<div class="card" style="margin-bottom:20px;" id="notif-prefs-section">
+  <div class="card-header">
+    <div class="card-title">🔔 Preferensi Notifikasi</div>
+    <span class="card-badge">Dapat Dikustomisasi</span>
+  </div>
+
+  <div class="card-body">
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.7;">
+      Pilih jenis notifikasi yang ingin ditampilkan di panel notifikasi
+      <strong>(ikon 🔔 di pojok kanan atas)</strong>.
+      Notifikasi yang dinonaktifkan tidak akan muncul meskipun kondisinya terpenuhi.
+    </p>
+
+    <div style="display:flex;flex-direction:column;gap:8px;" id="notif-prefs-list">
+
+      <!-- Paket mendekati deadline -->
+      <label style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+                    background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                    border-radius:var(--radius);cursor:pointer;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='var(--primary,#4f6ef7)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+        <input type="checkbox" id="notifpref-paket_deadline"
+               style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary,#4f6ef7);
+                      flex-shrink:0;cursor:pointer;" checked>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);
+                      display:flex;align-items:center;gap:6px;">
+            <span>⏰</span><span>Paket mendekati deadline (≤7 hari)</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45;">
+            Tampilkan pengingat ketika paket pengadaan hampir berakhir
+          </div>
+        </div>
+      </label>
+
+      <!-- Paket melewati tanggal selesai -->
+      <label style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+                    background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                    border-radius:var(--radius);cursor:pointer;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='var(--primary,#4f6ef7)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+        <input type="checkbox" id="notifpref-paket_terlambat"
+               style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary,#4f6ef7);
+                      flex-shrink:0;cursor:pointer;" checked>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);
+                      display:flex;align-items:center;gap:6px;">
+            <span>❌</span><span>Paket melewati tanggal selesai</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45;">
+            Tampilkan peringatan ketika paket sudah melewati batas waktu
+          </div>
+        </div>
+      </label>
+
+      <!-- Harga nego mendekati pagu -->
+      <label style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+                    background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                    border-radius:var(--radius);cursor:pointer;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='var(--primary,#4f6ef7)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+        <input type="checkbox" id="notifpref-anggaran_pagu"
+               style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary,#4f6ef7);
+                      flex-shrink:0;cursor:pointer;" checked>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);
+                      display:flex;align-items:center;gap:6px;">
+            <span>💰</span><span>Harga nego mendekati/melebihi pagu total</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45;">
+            Tampilkan notifikasi ketika total harga nego mencapai ≥90% dari total pagu
+          </div>
+        </div>
+      </label>
+
+      <!-- Belum ada data Survey Harga -->
+      <label style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+                    background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                    border-radius:var(--radius);cursor:pointer;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='var(--primary,#4f6ef7)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+        <input type="checkbox" id="notifpref-survey_kosong"
+               style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary,#4f6ef7);
+                      flex-shrink:0;cursor:pointer;" checked>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);
+                      display:flex;align-items:center;gap:6px;">
+            <span>📊</span><span>Belum ada data Survey Harga</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45;">
+            Ingatkan jika belum ada data survey harga sama sekali
+          </div>
+        </div>
+      </label>
+
+      <!-- Status auto backup -->
+      <label style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+                    background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                    border-radius:var(--radius);cursor:pointer;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='var(--primary,#4f6ef7)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+        <input type="checkbox" id="notifpref-auto_backup"
+               style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary,#4f6ef7);
+                      flex-shrink:0;cursor:pointer;" checked>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);
+                      display:flex;align-items:center;gap:6px;">
+            <span>💾</span><span>Status auto backup</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45;">
+            Tampilkan notifikasi hasil backup otomatis (berhasil atau gagal)
+          </div>
+        </div>
+      </label>
+
+      <!-- Nilai kontrak melebihi pagu RUP -->
+      <label style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+                    background:var(--bg2,var(--surface2));border:1px solid var(--border);
+                    border-radius:var(--radius);cursor:pointer;transition:border-color .15s;"
+             onmouseover="this.style.borderColor='var(--primary,#4f6ef7)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+        <input type="checkbox" id="notifpref-kontrak_pagu"
+               style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary,#4f6ef7);
+                      flex-shrink:0;cursor:pointer;" checked>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);
+                      display:flex;align-items:center;gap:6px;">
+            <span>🚨</span><span>Nilai kontrak melebihi/mendekati pagu RUP</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--text2);margin-top:3px;line-height:1.45;">
+            Tampilkan peringatan jika nilai kontrak per RUP melebihi atau hampir melebihi pagu
+          </div>
+        </div>
+      </label>
+
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="saveNotifPrefsFromUI()" style="gap:8px;min-width:160px;">
+        <span>💾</span> Simpan Preferensi
+      </button>
+      <button class="btn btn-secondary" onclick="resetNotifPrefs()" style="gap:8px;min-width:130px;">
+        <span>🔄</span> Reset Default
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 8. TOMBOL AKSI UTAMA ───────────────────────────────────── -->
+<div class="card" style="margin-bottom:40px;overflow:visible;">
+  <div class="cfg-actions">
+    <button class="btn btn-secondary" onclick="resetPengaturan()" style="gap:8px;">
+      <span>↺</span> Reset ke Default
+    </button>
+    <button class="btn btn-primary" onclick="savePengaturanAndPreview()" style="gap:8px;">
+      <span>💾</span> Simpan Pengaturan
+    </button>
+  </div>
+</div>
+
+<!-- ── 8. SCRIPT — Logika Telegram (inline, berjalan di konteks halaman) ── -->
+<script>
+// Isi form dari config yang tersimpan
+function tgFillForm() {
+  if (typeof tgGetConfig !== 'function') return;
+  const cfg = tgGetConfig();
+  const elToken  = document.getElementById('tg-botToken');
+  const elChatId = document.getElementById('tg-chatId');
+  const elAktif  = document.getElementById('tg-aktif');
+  if (elToken)  elToken.value   = cfg.botToken || '';
+  if (elChatId) elChatId.value  = cfg.chatId   || '';
+  if (elAktif)  elAktif.checked = cfg.aktif    || false;
+  _tgUpdateToggleUI(cfg.aktif || false);
+}
+
+// Perbarui tampilan toggle on/off
+function _tgUpdateToggleUI(aktif) {
+  const track = document.getElementById('tg-toggle-track');
+  const thumb = document.getElementById('tg-toggle-thumb');
+  const label = document.getElementById('tg-aktif-label');
+  if (track) track.style.background = aktif ? 'var(--gold)' : 'var(--border2)';
+  if (thumb) thumb.style.left       = aktif ? '23px'       : '3px';
+  if (label) label.innerHTML = aktif
+    ? 'Notifikasi Telegram <span style="color:var(--green,#4caf50);">Aktif ✓</span>'
+    : 'Notifikasi Telegram <span style="color:var(--red);">Nonaktif</span>';
+}
+
+function tgToggleAktif(aktif) { _tgUpdateToggleUI(aktif); }
+
+function tgToggleTokenVisible() {
+  const el = document.getElementById('tg-botToken');
+  if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+async function tgTestKirim() {
+  const token  = (document.getElementById('tg-botToken')?.value  || '').trim();
+  const chatId = (document.getElementById('tg-chatId')?.value    || '').trim();
+  const btn    = document.getElementById('tg-btn-test');
+  if (!token || !chatId) {
+    _tgShowStatus('⚠️ Isi Bot Token dan Chat ID terlebih dahulu.', 'warn');
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Mengirim...'; }
+  const hasil = await tgTestKoneksi(token, chatId);
+  if (btn) { btn.disabled = false; btn.innerHTML = '<span>📨</span> Kirim Pesan Test'; }
+  hasil.ok
+    ? _tgShowStatus('✅ Berhasil! Cek pesan masuk di Telegram Anda.', 'ok')
+    : _tgShowStatus(`❌ Gagal: ${hasil.desc || 'Periksa token dan chat ID.'}`, 'err');
+}
+
+function tgSimpanPengaturan() {
+  const token  = (document.getElementById('tg-botToken')?.value  || '').trim();
+  const chatId = (document.getElementById('tg-chatId')?.value    || '').trim();
+  const aktif  = document.getElementById('tg-aktif')?.checked    || false;
+  if (aktif && (!token || !chatId)) {
+    _tgShowStatus('⚠️ Isi Bot Token dan Chat ID sebelum mengaktifkan notifikasi.', 'warn');
+    return;
+  }
+  if (typeof tgSaveConfig === 'function') tgSaveConfig({ botToken: token, chatId, aktif });
+  _tgShowStatus('✅ Pengaturan Telegram disimpan.', 'ok');
+}
+
+function _tgShowStatus(msg, type) {
+  const el = document.getElementById('tg-test-status');
+  if (!el) return;
+  const colors = {
+    ok:   { bg: 'var(--green-subtle,#e8f5e9)', border: 'var(--green,#4caf50)', text: 'var(--green,#388e3c)' },
+    err:  { bg: 'var(--red-subtle,#fdecea)',   border: 'var(--red)',           text: 'var(--red)'           },
+    warn: { bg: 'var(--gold-subtle2)',          border: 'var(--gold-dim)',      text: 'var(--gold)'          },
+  };
+  const c = colors[type] || colors.warn;
+  Object.assign(el.style, { display: 'block', background: c.bg, border: `1px solid ${c.border}`, color: c.text });
+  el.textContent = msg;
+}
+
+// Inisialisasi: isi form saat halaman pengaturan terbuka
+document.addEventListener('DOMContentLoaded', () => setTimeout(tgFillForm, 300));
+window.addEventListener('sb-ready', () => setTimeout(tgFillForm, 200));
+</script>

@@ -1,0 +1,111 @@
+/* Landscape Patch for iPhone Safari / Chrome & Android */
+/* Include AFTER style.css */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --topbar-height: 44px;
+    --sidebar-width: 200px;
+  }
+  body {
+    font-size: 13px;
+  }
+  .sidebar-brand {
+    padding: 10px 12px;
+  }
+  .sidebar-brand .brand-icon {
+    font-size: 20px;
+  }
+  .sidebar-brand .title {
+    font-size: 15px;
+  }
+  .nav-item {
+    padding: 7px 10px;
+    font-size: 12.5px;
+  }
+  .topbar {
+    height: var(--topbar-height);
+    padding: 0 10px;
+  }
+  .content {
+    padding: 10px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .chart-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .card {
+    padding: 12px;
+  }
+  .modal {
+    max-height: 90vh;
+  }
+}
+
+/* iPhone Safari specific - safe area & dynamic viewport */
+@supports (-webkit-touch-callout: none) {
+  @media (orientation: landscape) {
+    body, .app {
+      height: 100dvh;
+      height: -webkit-fill-available;
+    }
+    #status-bar {
+      padding-left: calc(var(--sidebar-width) + 8px + env(safe-area-inset-left));
+      padding-right: calc(12px + env(safe-area-inset-right));
+    }
+    .sidebar {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .content {
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+  }
+}
+
+/* Chrome iPhone & Android - reduce hover effects, increase tap target */
+@media (orientation: landscape) and (pointer: coarse) {
+  .nav-item, .btn, .action-btn {
+    min-height: 40px;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Prevent zoom on input focus */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Small landscape phones < 932px width */
+@media (orientation: landscape) and (max-width: 932px) {
+  .sidebar {
+    width: 180px;
+  }
+  :root { --sidebar-width: 180px; }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  #status-bar .sb-instansi {
+    max-width: 160px;
+  }
+  .topbar-actions {
+    gap: 6px;
+  }
+  .search-wrap {
+    max-width: 200px;
+  }
+}
+
+/* Android Chrome landscape - address bar visible */
+@media (orientation: landscape) and (max-height: 450px) {
+  .sidebar-nav {
+    padding-bottom: 60px;
+  }
+  .modal-body {
+    max-height: 70vh;
+  }
+}
