@@ -14,7 +14,6 @@ window.SBAuth = {
 window.doCloudLogout = async function() {
 
     // STEP 1: Panggil sbLogout() dari supabase-db.js
-    // Ini yang reset _session, _userRole, dan hapus sideva_session_v3
     if (typeof sbLogout === 'function') {
         try {
             await sbLogout();
@@ -44,18 +43,18 @@ window.doCloudLogout = async function() {
         }
     }
 
-    // STEP 3: Bersihkan localStorage (pastikan sideva_session_v3 terhapus)
+    // STEP 3: Bersihkan localStorage
     try {
         const keysToRemove = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (
-                key.startsWith('sb-')           ||
-                key.startsWith('supabase')       ||
-                key === 'sideva_session_v3'      ||
-                key === 'sideva_sb_session'      ||
-                key.includes('auth')             ||
-                key.includes('token')            ||
+                key.startsWith('sb-')       ||
+                key.startsWith('supabase')  ||
+                key === 'sideva_session_v3' ||
+                key === 'sideva_sb_session' ||
+                key.includes('auth')        ||
+                key.includes('token')       ||
                 key.includes('session')
             ) {
                 keysToRemove.push(key);
@@ -70,4 +69,22 @@ window.doCloudLogout = async function() {
     // STEP 5: Hapus cookie
     try {
         document.cookie.split(';').forEach(c => {
-            const name
+            const name = c.trim().split('=')[0];
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+        });
+    } catch(e) {}
+
+    // STEP 6: Reset SBAuth state
+    window.SBAuth = {
+        isAdmin: () => false,
+        getRole: () => 'viewer',
+        isLoggedIn: () => false
+    };
+
+    // STEP 7: Reset variable memory
+    try { if (typeof _session  !== 'undefined') _session  = null; } catch(e) {}
+    try { if (typeof _userRole !== 'undefined') _userRole = null; } catch(e) {}
+
+    // STEP 8: Hard redirect
+    setTimeout(() => window.location.replace('index.html'), 150);
+};
