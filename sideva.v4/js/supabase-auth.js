@@ -1,30 +1,37 @@
 // ============================================================
-//  SI-DEVA — Supabase Auth Layer v2.0 (FIXED)
+//  SI-DEVA — Supabase Auth Layer v2.0 (FIXED GLOBAL)
 // ============================================================
 'use strict';
 
-// Pindahkan definisi fungsi ke luar atau pasang langsung ke window
+// 1. Definisikan Global Object agar file lain bisa langsung mengakses SBAuth
+window.SBAuth = {
+    isAdmin: () => false, // Default sebelum inisialisasi
+    getRole: () => 'viewer',
+    isLoggedIn: () => false
+};
+
+// 2. Fungsi Logout Global
 window.doCloudLogout = async function() {
-    console.log("Logout triggered...");
     try {
-        // Menggunakan instance supabase global
-        if (window.supabase) {
-            await window.supabase.auth.signOut();
-        }
+        if (window.supabase) await window.supabase.auth.signOut();
         localStorage.removeItem('sideva_sb_session');
         window.location.href = 'index.html';
     } catch (e) {
-        console.error('Logout error:', e);
         window.location.href = 'index.html';
     }
 };
 
 (function(global){
-  // ... sisa kode existing Anda di sini ...
-  // (Pastikan kode asli Anda tidak dihapus, 
-  // hanya tambahkan fungsi di atas di baris paling atas atau luar IIFE)
+  // ... (kode inisialisasi asli Anda tetap di sini)
   
-  const URL = global.SUPABASE_URL || window.SUPABASE_URL;
-  const KEY = global.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY;
-  // ... dan seterusnya
+  // Pastikan di bagian akhir, kita mengupdate window.SBAuth dengan yang asli
+  const realSBAuth = {
+    // ... semua fungsi login, logout, getRole, dll ...
+    isAdmin: () => _role === 'admin',
+    getRole: () => _role,
+    // ...
+  };
+  
+  global.SBAuth = realSBAuth;
+  // ...
 })(window);
