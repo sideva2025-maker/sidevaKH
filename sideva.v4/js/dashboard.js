@@ -8342,8 +8342,9 @@ var ROLE_LABELS = window.ROLE_LABELS;
 if (typeof _currentRole === 'undefined') var _currentRole = 'operator';
 
 function loadRole() {
-  _currentRole = (typeof getRole === 'function' && getRole()) || localStorage.getItem('sideva_role') || 'operator';
-  localStorage.setItem('sideva_role', _currentRole);
+  // SESUDAH
+_currentRole = (typeof getRole === 'function' && getRole()) || 'viewer';
+localStorage.setItem('sideva_role', _currentRole);
   _injectRoleUI();
   applyLegacyRoleUI();
   if (typeof window.applyRoleUI === 'function') window.applyRoleUI();
@@ -8361,7 +8362,10 @@ function _injectRoleUI() {
   topbar.insertBefore(badge, topbar.firstChild);
 }
 function setRole(role) {
-  _currentRole = role;
+ // Hanya simpan jika role valid dari session
+if (role && role !== 'viewer' || typeof getRole === 'function' && getRole()) {
+    localStorage.setItem('sideva_role', role);
+}
   localStorage.setItem('sideva_role', role);
   const badge = document.getElementById('role-indicator');
   if (badge) { badge.textContent = ROLE_LABELS[role] || role; badge.className = 'role-badge role-' + role; }
