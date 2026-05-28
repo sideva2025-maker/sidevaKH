@@ -156,6 +156,27 @@ async function renderOpdManagement() {
   const el = document.getElementById('page-opd-management');
   if (!el) return;
 
+  // Tunggu sampai SBAuth siap (Safety Check)
+  const checkAccess = () => {
+    if (typeof isLoggedIn === 'function' && !isLoggedIn()) return 'login';
+    if (typeof isAdmin === 'function' && !isAdmin()) return 'denied';
+    return 'ok';
+  };
+
+  const status = checkAccess();
+  if (status === 'login') {
+    el.innerHTML = '<div class="empty-state">Silakan login terlebih dahulu</div>';
+    return;
+  }
+  if (status === 'denied') {
+    el.innerHTML = '<div class="empty-state">Akses ditolak - Hanya Admin</div>';
+    return;
+  }
+
+async function renderOpdManagement() {
+  const el = document.getElementById('page-opd-management');
+  if (!el) return;
+
   if (!isLoggedIn()) {
     el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><div>Silakan login terlebih dahulu</div></div>';
     return;
