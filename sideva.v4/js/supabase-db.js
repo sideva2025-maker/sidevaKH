@@ -175,12 +175,6 @@ async function sbLogout() {
   } catch(_) {}
   // Also request server logout with credentials included to clear HttpOnly cookies set by Supabase.
   try {
-    const headers = { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
-    if (_session?.access_token) headers['Authorization'] = 'Bearer ' + _session.access_token;
-    console.log('[SBDB] calling server logout endpoint to clear HttpOnly cookies', { url: `${SUPABASE_URL}/auth/v1/logout?scope=global` });
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/logout?scope=global`, { method: 'POST', headers, credentials: 'include' });
-    console.log('[SBDB] server logout response', { status: res.status, ok: res.ok });
-  } catch(e) { console.warn('[SBDB] server logout fetch failed', e); }
 
   _session = null;
   _userRole = null;
@@ -477,10 +471,21 @@ if (!window._sbInitRegistered) {
     window._sbReady = true;
 
     if (ok) {
+      // User sudah login — load data dan render app
       await loadAllData();
       _startPolling();
       if (typeof renderAll === 'function') renderAll();
       if (typeof updateBadges === 'function') updateBadges();
+    } else {
+      // Tidak ada sesi — sembunyikan app, tampilkan login
+      const appEl = document.getElementById('app') ||
+                    document.querySelector('.app-container') ||
+                    document.querySelector('.sidebar') ||
+                    document.querySelector('main');
+      if (appEl) appEl.style.display = 'none';
+
+      // Trigger event agar file lain bisa tampilkan login modal
+      window.dispatchEvent(new CustomEvent('sideva:show-login'));
     }
 
     window.dispatchEvent(new CustomEvent('sb-ready', { detail: { loggedIn: ok, role: _userRole } }));
