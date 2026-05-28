@@ -79,9 +79,16 @@ window.doCloudLogout = async function() {
 
     // STEP 5: Hapus cookie
     try {
-        document.cookie.split(';').forEach(c => {
-            const name = c.trim().split('=')[0];
-            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+        const cookieNames = document.cookie.split(';').map(c => c.trim().split('=')[0]).filter(Boolean);
+        const domains = [window.location.hostname, '.' + window.location.hostname];
+        const paths = ['/', window.location.pathname, window.location.pathname.replace(/\/[^/]*$/, '/')];
+        cookieNames.forEach(name => {
+            domains.forEach(domain => {
+                paths.forEach(path => {
+                    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=${path};domain=${domain};`;
+                    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=${path};`;
+                });
+            });
         });
     } catch(e) {}
 
@@ -96,6 +103,6 @@ window.doCloudLogout = async function() {
     try { if (typeof _session  !== 'undefined') _session  = null; } catch(e) {}
     try { if (typeof _userRole !== 'undefined') _userRole = null; } catch(e) {}
 
-    // STEP 8: Hard redirect ke index root agar logout valid dari halaman /pages/*.html
-    setTimeout(() => window.location.replace(new URL('/index.html', window.location.origin).href), 150);
+    // STEP 8: Hard redirect ke index file di folder saat ini agar logout valid dari halaman /pages/*.html
+    setTimeout(() => window.location.replace(new URL('index.html', window.location.href).href), 150);
 };
