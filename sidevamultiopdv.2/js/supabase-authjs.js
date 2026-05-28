@@ -105,3 +105,15 @@
     .role-admin    { background: rgba(251,191,36,.15); color: #fbbf24; border: 1px solid rgba(251,191,36,.3); }
     .role-operator { background: rgba(96,165,250,.15); color: #60a5fa; border: 1px solid rgba(96,165,250,.3); }
     .role-viewer   { background:
+// ── Expose ke window agar onclick inline bisa akses ─────────
+window.doAuthLogin      = doAuthLogin;
+window.doAuthRegister   = doAuthRegister;
+window.doCloudLogout    = doCloudLogout;
+window.changeUserRole   = changeUserRole;
+window.showAuthOverlay  = showAuthOverlay;
+window.hideAuthOverlay  = hideAuthOverlay;
+window.applyRoleUI      = applyRoleUI;
+window.addEventListener('sideva:page-changed', (e) => {
+  if (e?.detail?.page !== 'backup') return;
+  setTimeout(() => { injectAuthPanel(); if (isAdminOrSuper()) renderUserMgmt(); }, 50);
+});
