@@ -156,30 +156,11 @@ async function renderOpdManagement() {
   const el = document.getElementById('page-opd-management');
   if (!el) return;
 
-  // Tunggu sampai SBAuth siap (Safety Check)
- 
-  // ── Render halaman OPD Management ────────────────────────────
-async function renderOpdManagement() {
-  const el = document.getElementById('page-opd-management');
-  if (!el) return;
-
-  // Tunggu sampai SBAuth siap (Safety Check)
-  const checkAccess = () => {
-    if (typeof isLoggedIn === 'function' && !isLoggedIn()) return 'login';
-    if (typeof isAdmin === 'function' && !isAdmin()) return 'denied';
-    return 'ok';
-  };
-
-  const status = checkAccess();
-  if (status === 'login') {
-    el.innerHTML = '<div class="empty-state">Silakan login terlebih dahulu</div>';
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><div>Silakan login terlebih dahulu</div></div>';
     return;
   }
-  if (status === 'denied') {
-    el.innerHTML = '<div class="empty-state">Akses ditolak - Hanya Admin</div>';
-    return;
-  }
-  if (!isAdmin()) {
+  if (typeof isAdmin === 'function' && !isAdmin()) {
     el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚫</div><div>Akses ditolak - Hanya Admin</div></div>';
     return;
   }
@@ -385,36 +366,13 @@ async function submitAddOpd() {
 
 // ══════════════════════════════════════════════════════════════
 //  ⚙️  CONFIG OPD — Modal lengkap (pengganti prompt() lama)
-//
-//  Field yang tersedia:
-//  [IDENTITAS]
-//  • Nama OPD        → disimpan langsung di tabel opd.nama_opd
-//  • Kode OPD        → opd_config.data.kode_opd   (singkatan resmi, mis. "DINAS-PU")
-//  • Singkatan       → opd_config.data.singkatan   (mis. "Dinas PU")
-//
-//  [PEJABAT]
-//  • Kepala OPD      → opd_config.data.kepala_opd
-//  • NIP Kepala      → opd_config.data.nip_kepala
-//  • Jabatan Kepala  → opd_config.data.jabatan_kepala
-//
-//  [KONTAK]
-//  • Alamat          → opd_config.data.alamat
-//  • Telepon         → opd_config.data.telepon
-//  • Email OPD       → opd_config.data.email_opd
-//  • Website         → opd_config.data.website
-//
-//  [LAINNYA]
-//  • Keterangan      → opd_config.data.keterangan
-//  • Status Aktif    → opd_config.data.aktif  (boolean, default: true)
 // ══════════════════════════════════════════════════════════════
 async function editOpdConfig(opdId) {
   const opd = masterState?.opd?.find(o => o.id === opdId);
   if (!opd) { toast('Data OPD tidak ditemukan', 'error'); return; }
 
-  // Tampilkan modal loading dahulu
   _showOpdConfigModal(opdId, opd, null);
 
-  // Muat config existing dari DB
   try {
     const rows = await sbFetch(`/rest/v1/opd_config?opd_id=eq.${opdId}&select=data`, 'GET');
     const cfg  = rows?.[0]?.data || {};
@@ -425,7 +383,6 @@ async function editOpdConfig(opdId) {
 }
 
 function _showOpdConfigModal(opdId, opd, cfg) {
-  // Hapus modal lama jika ada
   document.getElementById('opd-cfg-modal-overlay')?.remove();
 
   const overlay = document.createElement('div');
@@ -591,10 +548,8 @@ async function _submitOpdConfig(opdId) {
   saveBtn.textContent = '⏳ Menyimpan…';
 
   try {
-    // 1. Update nama OPD di tabel opd
     await dbPut('opd', { id: opdId, namaOpd });
 
-    // 2. Simpan config ke opd_config (upsert via merge-duplicates)
     const cfg = {
       kode_opd:       gv('ocfg-kode-opd'),
       singkatan:      gv('ocfg-singkatan'),
@@ -750,11 +705,11 @@ if (typeof sbGetAllUsersWithEmail === 'undefined') {
 async function renderManajemenUser() {
   const el = document.getElementById('um-content');
   if (!el) return;
-  if (!isLoggedIn()) {
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
     el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔒</div><div>Silakan login terlebih dahulu</div></div>';
     return;
   }
-  if (!isAdmin()) {
+  if (typeof isAdmin === 'function' && !isAdmin()) {
     el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚫</div><div>Akses ditolak - Hanya Admin</div></div>';
     return;
   }
@@ -834,7 +789,7 @@ function _esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── Listen navigation changes (avoid monkey-patching showPage) ──
+// ── Listen navigation changes ─────────────────────────────────
 window.addEventListener('sideva:page-changed', (e) => {
   const page = e?.detail?.page;
   if (page === 'opd-management') setTimeout(() => renderOpdManagement(), 60);
