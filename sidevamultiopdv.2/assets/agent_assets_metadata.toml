@@ -1,8 +1,0 @@
-uploads = []
-generated = []
-
-[[outputs]]
-id = "YKOR3mzkQfTCu7j0mXO40"
-uri = "file://attached_assets/dashboard_sideva.tar.gz"
-type = "unspecified"
-title = "dashboard.js — SI-DEVA Updated (tar.gz)"
