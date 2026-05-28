@@ -165,9 +165,17 @@ async function sbLogout() {
       await sbSaveConfig(cfgToSync);
     }
   } catch(_) {}
-  try { await sbFetch('/auth/v1/logout', 'POST', null, { 'Authorization': 'Bearer ' + _session?.access_token }); } catch(_) {}
-  _session = null; _userRole = null;
+
+  try {
+    await sbFetch('/auth/v1/logout', 'POST', null, { 'Authorization': 'Bearer ' + _session?.access_token });
+  } catch(_) {}
+
+  _session = null;
+  _userRole = null;
   localStorage.removeItem('sideva_session_v3');
+  localStorage.removeItem('sideva_sb_session');
+  localStorage.removeItem('sideva_role');
+  localStorage.removeItem('sideva_current_opd_id');
   _stopRealtime();
 }
 

@@ -22,6 +22,15 @@ window.doCloudLogout = async function() {
         }
     }
 
+    // STEP 1b: Jika ada session sync cloud terpisah, logout juga
+    if (typeof syncLogout === 'function') {
+        try {
+            await syncLogout();
+        } catch(e) {
+            console.warn('syncLogout error:', e);
+        }
+    }
+
     // STEP 2: Logout via REST API langsung (backup)
     const token = (typeof _session !== 'undefined' && _session?.access_token)
         ? _session.access_token
@@ -87,6 +96,6 @@ window.doCloudLogout = async function() {
     try { if (typeof _session  !== 'undefined') _session  = null; } catch(e) {}
     try { if (typeof _userRole !== 'undefined') _userRole = null; } catch(e) {}
 
-    // STEP 8: Hard redirect
-    setTimeout(() => window.location.replace('index.html'), 150);
+    // STEP 8: Hard redirect ke index root agar logout valid dari halaman /pages/*.html
+    setTimeout(() => window.location.replace(new URL('/index.html', window.location.origin).href), 150);
 };
