@@ -157,12 +157,7 @@ async function renderOpdManagement() {
   if (!el) return;
 
   // Tunggu sampai SBAuth siap (Safety Check)
-  const checkAccess = () => {
-    if (typeof isLoggedIn === 'function' && !isLoggedIn()) return 'login';
-    if (typeof isAdmin === 'function' && !isAdmin()) return 'denied';
-    return 'ok';
-  };
-
+ 
   // ── Render halaman OPD Management ────────────────────────────
 async function renderOpdManagement() {
   const el = document.getElementById('page-opd-management');
